@@ -13,3 +13,18 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+#Air
+bin/
+tmp/
+.air.toml
+
+# IDL
+.idea
+
+#ENV
+.env
+
+# Database
+*.sqlite
+*.db
