@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+go.sum
 
 # Test binary, built with `go test -c`
 *.test
@@ -21,9 +22,11 @@ tmp/
 
 # IDL
 .idea
+.idea/
 
 #ENV
 .env
+.env/
 
 # Database
 *.sqlite
