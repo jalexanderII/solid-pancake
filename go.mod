@@ -7,7 +7,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.21.0
 	github.com/hashicorp/go-hclog v1.0.0
 	github.com/joho/godotenv v1.4.0
-	gorm.io/datatypes v1.0.2
+	github.com/lib/pq v1.3.0
 	gorm.io/driver/sqlite v1.2.3
 	gorm.io/gorm v1.22.2
 )

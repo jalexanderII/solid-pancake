@@ -1,9 +1,5 @@
 package models
 
-import (
-	"gorm.io/datatypes"
-)
-
 type Place struct {
 	Address string  `json:"address,omitempty"`
 	Street  string  `gorm:"not null" json:"street,omitempty"`
@@ -16,13 +12,13 @@ type Place struct {
 }
 
 type ListingMetrics struct {
-	AvailableOn     datatypes.Date   `json:"available_on,omitempty"`
-	LastPriceChange *LastPriceChange `gorm:"embedded" json:"last_price_change,omitempty"`
-	DaysOnMarket    int              `json:"days_on_market,omitempty"`
+	AvailableOn     string          `json:"available_on"`
+	LastPriceChange LastPriceChange `gorm:"embedded" json:"last_price_change"`
+	DaysOnMarket    int             `json:"days_on_market"`
 }
 
 type LastPriceChange struct {
-	Rent       int            `json:"rent"`
-	PriceDelta int            `json:"price_delta,"`
-	ChangedOn  datatypes.Date `json:"changed_on,"`
+	Rent       int    `json:"rent"`
+	PriceDelta int    `json:"price_delta"`
+	ChangedOn  string `json:"changed_on"`
 }
