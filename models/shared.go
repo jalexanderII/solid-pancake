@@ -13,12 +13,5 @@ type Place struct {
 
 type ListingMetrics struct {
 	AvailableOn     string          `json:"available_on"`
-	LastPriceChange LastPriceChange `gorm:"embedded" json:"last_price_change"`
 	DaysOnMarket    int             `json:"days_on_market"`
-}
-
-type LastPriceChange struct {
-	Rent       int    `json:"rent"`
-	PriceDelta int    `json:"price_delta"`
-	ChangedOn  string `json:"changed_on"`
 }

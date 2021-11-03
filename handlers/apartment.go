@@ -1,11 +1,15 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
 	"github.com/jalexanderII/solid-pancake/models"
+	"github.com/jalexanderII/solid-pancake/utils"
 )
 
 // Apartment To be used as a serializer
@@ -79,18 +83,18 @@ func GetApartments(c *fiber.Ctx) error {
 	responseApartments := make([]Apartment, len(apartments))
 
 	for idx, apartment := range apartments {
-		var realtor models.Realtor
-		if err := findRealtor(apartment.RealtorRef, &realtor); err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(err.Error())
-		}
-		realtorResponse := CreateResponseRealtor(realtor)
-
 		var building models.Building
+		var realtor models.Realtor
+
 		if err := findBuilding(apartment.BuildingRef, &building); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 		}
-		buildingResponse := CreateResponseBuilding(building, realtorResponse)
+		if err := findRealtor(building.RealtorRef, &realtor); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+		}
 
+		realtorResponse := CreateResponseRealtor(realtor)
+		buildingResponse := CreateResponseBuilding(building, realtorResponse)
 		responseApartments[idx] = CreateResponseApartment(apartment, buildingResponse)
 	}
 	return c.Status(fiber.StatusOK).JSON(responseApartments)
@@ -117,10 +121,10 @@ func GetApartment(c *fiber.Ctx) error {
 
 	var building models.Building
 	var realtor models.Realtor
-	database.Database.Db.First(&realtor, apartment.RealtorRef)
-	realtorResponse := CreateResponseRealtor(realtor)
-
 	database.Database.Db.First(&building, apartment.BuildingRef)
+	database.Database.Db.First(&realtor, building.RealtorRef)
+
+	realtorResponse := CreateResponseRealtor(realtor)
 	responseApartment := CreateResponseApartment(
 		apartment,
 		CreateResponseBuilding(building, realtorResponse),
@@ -142,7 +146,7 @@ type UpdateApartmentResponse struct {
 
 func UpdateApartment(c *fiber.Ctx) error {
 	var apartment models.Apartment
-	var updateApartmentResponse UpdateApartmentResponse
+	var uar UpdateApartmentResponse
 
 	id, err := c.ParamsInt("id")
 	if err != nil {
@@ -153,18 +157,18 @@ func UpdateApartment(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	if err = c.BodyParser(&updateApartmentResponse); err != nil {
+	if err = c.BodyParser(&uar); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
-	apartment.Name = updateApartmentResponse.Name
-	apartment.Address = updateApartmentResponse.Address
-	apartment.Rent = updateApartmentResponse.Rent
-	apartment.Size = updateApartmentResponse.Size
-	apartment.Features = updateApartmentResponse.Features
-	apartment.ListingMetrics = updateApartmentResponse.ListingMetrics
-	apartment.Description = updateApartmentResponse.Description
-	apartment.Amenities = updateApartmentResponse.Amenities
+	apartment.Name = utils.UpdateIfNew(uar.Name, apartment.Name).(string)
+	apartment.Address =  utils.UpdateIfNew(uar.Address, apartment.Address).(models.Place)
+	apartment.Rent =  utils.UpdateIfNew(uar.Rent, apartment.Rent).(int)
+	apartment.Size = utils.UpdateIfNew( uar.Size, apartment.Size).(float32)
+	apartment.Features = utils.UpdateIfNew(uar.Features, apartment.Features).(models.Features)
+	apartment.ListingMetrics = utils.UpdateIfNew(uar.ListingMetrics, apartment.ListingMetrics).(models.ListingMetrics)
+	apartment.Description = utils.UpdateIfNew(uar.Description, apartment.Description).(string)
+	apartment.Amenities = utils.UpdateIfNew(uar.Amenities, apartment.Amenities).([]string)
 	database.Database.Db.Save(&apartment)
 
 	var building models.Building
@@ -179,6 +183,74 @@ func UpdateApartment(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(responseApartment)
 }
 
+func UpdateApartmentBuilding(c *fiber.Ctx) error {
+	buildingID, err := c.ParamsInt("building_id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
+	}
+	var building models.Building
+	if err := findBuilding(buildingID, &building); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
+	}
+	var apartment models.Apartment
+	if err = findApartment(id, &apartment); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	apartment.Building = building
+	database.Database.Db.Save(&apartment)
+
+	var realtor models.Realtor
+	database.Database.Db.First(&realtor, apartment.RealtorRef)
+	realtorResponse := CreateResponseRealtor(realtor)
+	responseApartment := CreateResponseApartment(
+		apartment,
+		CreateResponseBuilding(building, realtorResponse),
+	)
+	return c.Status(fiber.StatusOK).JSON(responseApartment)
+}
+
+func UpdateApartmentRealtor(c *fiber.Ctx) error {
+	realtorID, err := c.ParamsInt("realtor_id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
+	}
+	var realtor models.Realtor
+	if err := findRealtor(realtorID, &realtor); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
+	}
+	var apartment models.Apartment
+	if err = findApartment(id, &apartment); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	apartment.Realtor = realtor
+	database.Database.Db.Save(&apartment)
+
+	UpdateBuildingRealtorUrl := fmt.Sprint("http://127.0.0.1:9092/api/v1/buildings/",id,"/realtor/",realtorID)
+	res, err := utils.MakeSyncPatchCall(UpdateBuildingRealtorUrl, realtor, "PATCH")
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
+	}
+	var building Building
+	if err := json.Unmarshal(res, &building); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
+	}
+
+	responseApartment := CreateResponseApartment(apartment, building)
+	return c.Status(fiber.StatusOK).JSON(responseApartment)
+}
+
 func DeleteApartment(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
@@ -189,8 +261,8 @@ func DeleteApartment(c *fiber.Ctx) error {
 
 	database.Database.Db.First(&apartment, id)
 	if apartment.Name == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No apartment found with ID", "data": nil})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No apartment found with ID"})
 	}
 	database.Database.Db.Delete(&apartment)
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Apartment successfully deleted", "data": nil})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Apartment successfully deleted"})
 }

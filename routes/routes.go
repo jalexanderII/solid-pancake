@@ -22,17 +22,26 @@ func SetupRoutes(app *fiber.App) {
 	realtors := v1.Group("/realtors")
 	realtors.Get("/", handlers.GetRealtors)
 	realtors.Post("/", handlers.CreateRealtor)
+	realtors.Get("/:id", handlers.GetRealtor)
+	realtors.Patch("/:id", handlers.UpdateRealtor)
+	realtors.Delete("/:id", handlers.DeleteRealtor)
 
 	// Building endpoints
 	buildings := v1.Group("/buildings")
 	buildings.Get("/", handlers.GetBuildings)
 	buildings.Post("/", handlers.CreateBuilding)
+	buildings.Get("/:id", handlers.GetBuilding)
+	buildings.Patch("/:id", handlers.UpdateBuilding)
+	buildings.Patch("/:id/realtor/:realtor_id", handlers.UpdateBuildingRealtor)
+	buildings.Delete("/:id", handlers.DeleteBuilding)
 
 	// Apartment endpoints
 	apartments := v1.Group("/apartments")
 	apartments.Get("/", handlers.GetApartments)
-	apartments.Get("/:id", handlers.GetApartment)
 	apartments.Post("/", handlers.CreateApartment)
+	apartments.Get("/:id", handlers.GetApartment)
 	apartments.Patch("/:id", handlers.UpdateApartment)
+	apartments.Patch("/:id/building/:building_id", handlers.UpdateApartmentBuilding)
+	apartments.Patch("/:id/realtor/:realtor_id", handlers.UpdateApartmentRealtor)
 	apartments.Delete("/:id", handlers.DeleteApartment)
 }
