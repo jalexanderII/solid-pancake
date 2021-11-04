@@ -7,5 +7,5 @@ type Realtor struct {
 	gorm.Model
 	Name        string `gorm:"index" json:"name"`
 	Company     string `json:"company"`
-	PhoneNumber string `json:"phone_number,omitempty"`
+	PhoneNumber string `json:"phone_number"`
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
 	"github.com/jalexanderII/solid-pancake/models"
-	"github.com/jalexanderII/solid-pancake/utils"
+	"gorm.io/gorm/clause"
 )
 
 type Realtor struct {
@@ -53,7 +53,6 @@ func GetRealtors(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(responseRealtors)
 }
 
-
 func findRealtor(id int, realtor *models.Realtor) error {
 	database.Database.Db.Find(&realtor, "id = ?", id)
 	if realtor.ID == 0 {
@@ -79,7 +78,7 @@ func GetRealtor(c *fiber.Ctx) error {
 type UpdateRealtorResponse struct {
 	Name        string `json:"name"`
 	Company     string `json:"company"`
-	PhoneNumber string `json:"phone_number,omitempty"`
+	PhoneNumber string `json:"phone_number"`
 }
 
 func UpdateRealtor(c *fiber.Ctx) error {
@@ -97,10 +96,7 @@ func UpdateRealtor(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
-	realtor.Name = utils.UpdateIfNew(urr.Name, realtor.Name).(string)
-	realtor.Company = utils.UpdateIfNew(urr.Company, realtor.Company).(string)
-	realtor.PhoneNumber = utils.UpdateIfNew(urr.PhoneNumber, realtor.PhoneNumber).(string)
-	database.Database.Db.Save(&realtor)
+	database.Database.Db.Model(&realtor).Clauses(clause.Returning{}).Updates(urr)
 
 	responseRealtor := CreateResponseRealtor(realtor)
 	return c.Status(fiber.StatusOK).JSON(responseRealtor)

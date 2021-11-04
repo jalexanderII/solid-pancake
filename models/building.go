@@ -10,8 +10,9 @@ type Building struct {
 	gorm.Model
 	Name        string         `gorm:"index" json:"name"`
 	Address     Place          `gorm:"embedded" json:"address"`
-	Description string         `json:"description,omitempty"`
+	Description string         `json:"description"`
 	Amenities   pq.StringArray `gorm:"type:text[]" json:"amenities"`
+	Images      pq.StringArray `gorm:"type:text[]" json:"images"`
 	RealtorRef  int            `json:"realtor_id"`
 	Realtor     Realtor        `gorm:"foreignKey:RealtorRef"`
 }

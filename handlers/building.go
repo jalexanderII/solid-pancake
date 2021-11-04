@@ -13,37 +13,36 @@ import (
 type Building struct {
 	ID          uint         `json:"id"`
 	Name        string       `json:"name"`
-	Address     models.Place `json:"address" validate:"dive"`
-	Description string       `json:"description,omitempty"`
+	Address     models.Place `json:"address"`
+	Description string       `json:"description"`
 	Amenities   []string     `json:"amenities"`
+	Images      []string     `json:"images"`
 	Realtor     Realtor      `json:"realtor" validate:"dive"`
 }
 
-func CreateResponseBuilding(buildingModel models.Building, realtor Realtor) Building {
+func CreateResponseBuilding(buildingModel models.Building) Building {
+	var realtor models.Realtor
+	database.Database.Db.First(&realtor, buildingModel.RealtorRef)
 	return Building{
 		ID:          buildingModel.ID,
 		Name:        buildingModel.Name,
 		Address:     buildingModel.Address,
 		Description: buildingModel.Description,
 		Amenities:   buildingModel.Amenities,
-		Realtor:     realtor,
+		Images:      buildingModel.Images,
+		Realtor:     CreateResponseRealtor(realtor),
 	}
 }
 
 func CreateBuilding(c *fiber.Ctx) error {
 	var building models.Building
-	var realtor models.Realtor
 
 	if err := c.BodyParser(&building); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error_message": err.Error(),
 		})
 	}
-	if err := findRealtor(building.RealtorRef, &realtor); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
-	}
-	realtorResponse := CreateResponseRealtor(realtor)
-	responseBuilding := CreateResponseBuilding(building, realtorResponse)
+	responseBuilding := CreateResponseBuilding(building)
 	errs := middleware.ValidateStruct(&responseBuilding)
 	if errs != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": errs})
@@ -62,14 +61,10 @@ func GetBuildings(c *fiber.Ctx) error {
 
 	responseBuildings := make([]Building, len(buildings))
 	for idx, building := range buildings {
-		var realtor models.Realtor
-		database.Database.Db.Find(&realtor, "id = ?", building.RealtorRef)
-		realtorResponse := CreateResponseRealtor(realtor)
-		responseBuildings[idx] = CreateResponseBuilding(building, realtorResponse)
+		responseBuildings[idx] = CreateResponseBuilding(building)
 	}
 	return c.Status(fiber.StatusOK).JSON(responseBuildings)
 }
-
 
 func findBuilding(id int, building *models.Building) error {
 	database.Database.Db.Find(&building, "id = ?", id)
@@ -90,19 +85,17 @@ func GetBuilding(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	var realtor models.Realtor
-	database.Database.Db.First(&realtor, building.RealtorRef)
-	realtorResponse := CreateResponseRealtor(realtor)
-	responseBuilding := CreateResponseBuilding(building, realtorResponse)
+	responseBuilding := CreateResponseBuilding(building)
 
 	return c.Status(fiber.StatusOK).JSON(responseBuilding)
 }
 
 type UpdateBuildingResponse struct {
 	Name        string       `json:"name"`
-	Address     models.Place `json:"address" validate:"dive"`
-	Description string       `json:"description,omitempty"`
+	Address     models.Place `json:"address"`
+	Description string       `json:"description"`
 	Amenities   []string     `json:"amenities"`
+	Images      []string     `json:"images"`
 }
 
 func UpdateBuilding(c *fiber.Ctx) error {
@@ -122,15 +115,13 @@ func UpdateBuilding(c *fiber.Ctx) error {
 	}
 
 	building.Name = utils.UpdateIfNew(ubr.Name, building.Name).(string)
-	building.Address =  utils.UpdateIfNew(ubr.Address, building.Address).(models.Place)
+	building.Address = utils.UpdateIfNew(ubr.Address, building.Address).(models.Place)
 	building.Description = utils.UpdateIfNew(ubr.Description, building.Description).(string)
 	building.Amenities = utils.UpdateIfNew(ubr.Amenities, building.Amenities).([]string)
+	building.Images = utils.UpdateIfNew(ubr.Images, building.Images).([]string)
 	database.Database.Db.Save(&building)
 
-	var realtor models.Realtor
-	database.Database.Db.First(&realtor, building.RealtorRef)
-	realtorResponse := CreateResponseRealtor(realtor)
-	responseBuilding := CreateResponseBuilding(building,realtorResponse)
+	responseBuilding := CreateResponseBuilding(building)
 
 	return c.Status(fiber.StatusOK).JSON(responseBuilding)
 }
@@ -157,8 +148,7 @@ func UpdateBuildingRealtor(c *fiber.Ctx) error {
 	building.Realtor = realtor
 	database.Database.Db.Save(&building)
 
-	realtorResponse := CreateResponseRealtor(realtor)
-	responseBuilding := CreateResponseBuilding(building, realtorResponse)
+	responseBuilding := CreateResponseBuilding(building)
 	return c.Status(fiber.StatusOK).JSON(responseBuilding)
 }
 

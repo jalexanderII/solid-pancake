@@ -16,12 +16,13 @@ type Apartment struct {
 	ListingMetrics ListingMetrics `gorm:"embedded" json:"listing_metrics"`
 	Description    string         `json:"description"`
 	Amenities      pq.StringArray `gorm:"type:text[]" json:"amenities"`
+	Images         pq.StringArray `gorm:"type:text[]" json:"images"`
 	// A belongs to association sets up a one-to-one connection with another model,
 	// such that each instance of the declaring model “belongs to” one instance of the other model.
-	BuildingRef  int          `json:"building_id"`
-	Building     Building     `gorm:"foreignKey:BuildingRef"`
-	RealtorRef   int          `json:"realtor_id"`
-	Realtor      Realtor      `gorm:"foreignKey:RealtorRef"`
+	BuildingRef int      `json:"building_id"`
+	Building    Building `gorm:"foreignKey:BuildingRef"`
+	RealtorRef  int      `json:"realtor_id"`
+	Realtor     Realtor  `gorm:"foreignKey:RealtorRef"`
 }
 
 type Features struct {

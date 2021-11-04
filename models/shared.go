@@ -12,6 +12,6 @@ type Place struct {
 }
 
 type ListingMetrics struct {
-	AvailableOn     string          `json:"available_on"`
-	DaysOnMarket    int             `json:"days_on_market"`
+	AvailableOn  string `json:"available_on"`
+	DaysOnMarket int    `json:"days_on_market"`
 }
