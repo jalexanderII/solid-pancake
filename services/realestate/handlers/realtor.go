@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
-	"github.com/jalexanderII/solid-pancake/models"
+	"github.com/jalexanderII/solid-pancake/services/realestate/models"
 	"gorm.io/gorm/clause"
 )
 

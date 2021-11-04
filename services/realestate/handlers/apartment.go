@@ -7,30 +7,30 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
-	"github.com/jalexanderII/solid-pancake/models"
+	models2 "github.com/jalexanderII/solid-pancake/services/realestate/models"
 	"github.com/jalexanderII/solid-pancake/utils"
 )
 
 // Apartment To be used as a serializer
 type Apartment struct {
-	ID             uint                  `json:"id"`
-	Name           string                `json:"name"`
-	Address        models.Place          `json:"address" validate:"dive"`
-	Rent           int                   `json:"rent"`
-	Size           float32               `json:"size"`
-	Features       models.Features       `json:"features" validate:"dive"`
-	ListingMetrics models.ListingMetrics `json:"listing_metrics" validate:"dive"`
-	Description    string                `json:"description"`
-	Amenities      []string              `json:"amenities"`
-	Images         []string              `json:"images"`
-	Building       Building              `json:"building" validate:"dive"`
-	Realtor        Realtor               `json:"realtor" validate:"dive"`
+	ID             uint                   `json:"id"`
+	Name           string                 `json:"name"`
+	Address        models2.Place          `json:"address" validate:"dive"`
+	Rent           int                    `json:"rent"`
+	Size           float32                `json:"size"`
+	Features       models2.Features       `json:"features" validate:"dive"`
+	ListingMetrics models2.ListingMetrics `json:"listing_metrics" validate:"dive"`
+	Description    string                 `json:"description"`
+	Amenities      []string               `json:"amenities"`
+	Images         []string               `json:"images"`
+	Building       Building               `json:"building" validate:"dive"`
+	Realtor        Realtor                `json:"realtor" validate:"dive"`
 }
 
 // CreateResponseApartment Takes in a model and returns a serializer
-func CreateResponseApartment(apartmentModel models.Apartment) Apartment {
-	var building models.Building
-	var realtor models.Realtor
+func CreateResponseApartment(apartmentModel models2.Apartment) Apartment {
+	var building models2.Building
+	var realtor models2.Realtor
 	database.Database.Db.First(&building, apartmentModel.BuildingRef)
 	database.Database.Db.First(&realtor, building.RealtorRef)
 	return Apartment{
@@ -50,7 +50,7 @@ func CreateResponseApartment(apartmentModel models.Apartment) Apartment {
 }
 
 func CreateApartment(c *fiber.Ctx) error {
-	var apartment models.Apartment
+	var apartment models2.Apartment
 
 	if err := c.BodyParser(&apartment); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error_message": err.Error()})
@@ -70,7 +70,7 @@ func CreateApartment(c *fiber.Ctx) error {
 }
 
 func GetApartments(c *fiber.Ctx) error {
-	var apartments []models.Apartment
+	var apartments []models2.Apartment
 	database.Database.Db.Find(&apartments)
 	responseApartments := make([]Apartment, len(apartments))
 
@@ -80,7 +80,7 @@ func GetApartments(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(responseApartments)
 }
 
-func findApartment(id int, apartment *models.Apartment) error {
+func findApartment(id int, apartment *models2.Apartment) error {
 	database.Database.Db.Find(&apartment, "id = ?", id)
 	if apartment.ID == 0 {
 		return errors.New("apartment does not exist")
@@ -94,7 +94,7 @@ func GetApartment(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
 
-	var apartment models.Apartment
+	var apartment models2.Apartment
 	if err := findApartment(id, &apartment); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -105,19 +105,19 @@ func GetApartment(c *fiber.Ctx) error {
 }
 
 type UpdateApartmentResponse struct {
-	Name           string                `json:"name"`
-	Address        models.Place          `json:"address" validate:"dive"`
-	Rent           int                   `json:"rent"`
-	Size           float32               `json:"size"`
-	Features       models.Features       `json:"features" validate:"dive"`
-	ListingMetrics models.ListingMetrics `json:"listing_metrics" validate:"dive"`
-	Description    string                `json:"description"`
-	Amenities      []string              `json:"amenities"`
-	Images         []string              `json:"images"`
+	Name           string                 `json:"name"`
+	Address        models2.Place          `json:"address" validate:"dive"`
+	Rent           int                    `json:"rent"`
+	Size           float32                `json:"size"`
+	Features       models2.Features       `json:"features" validate:"dive"`
+	ListingMetrics models2.ListingMetrics `json:"listing_metrics" validate:"dive"`
+	Description    string                 `json:"description"`
+	Amenities      []string               `json:"amenities"`
+	Images         []string               `json:"images"`
 }
 
 func UpdateApartment(c *fiber.Ctx) error {
-	var apartment models.Apartment
+	var apartment models2.Apartment
 	var uar UpdateApartmentResponse
 
 	id, err := c.ParamsInt("id")
@@ -133,11 +133,11 @@ func UpdateApartment(c *fiber.Ctx) error {
 	}
 
 	apartment.Name = utils.UpdateIfNew(uar.Name, apartment.Name).(string)
-	apartment.Address = utils.UpdateIfNew(uar.Address, apartment.Address).(models.Place)
+	apartment.Address = utils.UpdateIfNew(uar.Address, apartment.Address).(models2.Place)
 	apartment.Rent = utils.UpdateIfNew(uar.Rent, apartment.Rent).(int)
 	apartment.Size = utils.UpdateIfNew(uar.Size, apartment.Size).(float32)
-	apartment.Features = utils.UpdateIfNew(uar.Features, apartment.Features).(models.Features)
-	apartment.ListingMetrics = utils.UpdateIfNew(uar.ListingMetrics, apartment.ListingMetrics).(models.ListingMetrics)
+	apartment.Features = utils.UpdateIfNew(uar.Features, apartment.Features).(models2.Features)
+	apartment.ListingMetrics = utils.UpdateIfNew(uar.ListingMetrics, apartment.ListingMetrics).(models2.ListingMetrics)
 	apartment.Description = utils.UpdateIfNew(uar.Description, apartment.Description).(string)
 	apartment.Amenities = utils.UpdateIfNew(uar.Amenities, apartment.Amenities).([]string)
 	apartment.Images = utils.UpdateIfNew(uar.Images, apartment.Images).([]string)
@@ -152,7 +152,7 @@ func UpdateApartmentBuilding(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
-	var building models.Building
+	var building models2.Building
 	if err := findBuilding(buildingID, &building); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -161,7 +161,7 @@ func UpdateApartmentBuilding(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
-	var apartment models.Apartment
+	var apartment models2.Apartment
 	if err = findApartment(id, &apartment); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -178,7 +178,7 @@ func UpdateApartmentRealtor(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
-	var realtor models.Realtor
+	var realtor models2.Realtor
 	if err := findRealtor(realtorID, &realtor); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -187,7 +187,7 @@ func UpdateApartmentRealtor(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
-	var apartment models.Apartment
+	var apartment models2.Apartment
 	if err = findApartment(id, &apartment); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -211,7 +211,7 @@ func DeleteApartment(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
 
-	var apartment models.Apartment
+	var apartment models2.Apartment
 
 	database.Database.Db.First(&apartment, id)
 	if apartment.Name == "" {

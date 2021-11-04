@@ -2,7 +2,7 @@ package database
 
 import (
 	"github.com/hashicorp/go-hclog"
-	"github.com/jalexanderII/solid-pancake/models"
+	models2 "github.com/jalexanderII/solid-pancake/services/realestate/models"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -27,7 +27,7 @@ func ConnectDb() {
 	db.Logger = logger.Default.LogMode(logger.Info)
 	// Migrate the schema
 	dbLogger.Info("Running Migrations")
-	db.AutoMigrate(&models.Apartment{}, &models.Building{}, &models.Realtor{})
+	db.AutoMigrate(&models2.Apartment{}, &models2.Building{}, &models2.Realtor{})
 
 	Database = DbInstance{Db: db}
 }

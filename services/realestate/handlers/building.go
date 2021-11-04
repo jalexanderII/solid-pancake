@@ -6,22 +6,22 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
-	"github.com/jalexanderII/solid-pancake/models"
+	models2 "github.com/jalexanderII/solid-pancake/services/realestate/models"
 	"github.com/jalexanderII/solid-pancake/utils"
 )
 
 type Building struct {
-	ID          uint         `json:"id"`
-	Name        string       `json:"name"`
-	Address     models.Place `json:"address"`
-	Description string       `json:"description"`
-	Amenities   []string     `json:"amenities"`
-	Images      []string     `json:"images"`
-	Realtor     Realtor      `json:"realtor" validate:"dive"`
+	ID          uint          `json:"id"`
+	Name        string        `json:"name"`
+	Address     models2.Place `json:"address"`
+	Description string        `json:"description"`
+	Amenities   []string      `json:"amenities"`
+	Images      []string      `json:"images"`
+	Realtor     Realtor       `json:"realtor" validate:"dive"`
 }
 
-func CreateResponseBuilding(buildingModel models.Building) Building {
-	var realtor models.Realtor
+func CreateResponseBuilding(buildingModel models2.Building) Building {
+	var realtor models2.Realtor
 	database.Database.Db.First(&realtor, buildingModel.RealtorRef)
 	return Building{
 		ID:          buildingModel.ID,
@@ -35,7 +35,7 @@ func CreateResponseBuilding(buildingModel models.Building) Building {
 }
 
 func CreateBuilding(c *fiber.Ctx) error {
-	var building models.Building
+	var building models2.Building
 
 	if err := c.BodyParser(&building); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -56,7 +56,7 @@ func CreateBuilding(c *fiber.Ctx) error {
 }
 
 func GetBuildings(c *fiber.Ctx) error {
-	var buildings []models.Building
+	var buildings []models2.Building
 	database.Database.Db.Find(&buildings)
 
 	responseBuildings := make([]Building, len(buildings))
@@ -66,7 +66,7 @@ func GetBuildings(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(responseBuildings)
 }
 
-func findBuilding(id int, building *models.Building) error {
+func findBuilding(id int, building *models2.Building) error {
 	database.Database.Db.Find(&building, "id = ?", id)
 	if building.ID == 0 {
 		return errors.New("building does not exist")
@@ -80,7 +80,7 @@ func GetBuilding(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
 
-	var building models.Building
+	var building models2.Building
 	if err := findBuilding(id, &building); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -91,15 +91,15 @@ func GetBuilding(c *fiber.Ctx) error {
 }
 
 type UpdateBuildingResponse struct {
-	Name        string       `json:"name"`
-	Address     models.Place `json:"address"`
-	Description string       `json:"description"`
-	Amenities   []string     `json:"amenities"`
-	Images      []string     `json:"images"`
+	Name        string        `json:"name"`
+	Address     models2.Place `json:"address"`
+	Description string        `json:"description"`
+	Amenities   []string      `json:"amenities"`
+	Images      []string      `json:"images"`
 }
 
 func UpdateBuilding(c *fiber.Ctx) error {
-	var building models.Building
+	var building models2.Building
 	var ubr UpdateBuildingResponse
 
 	id, err := c.ParamsInt("id")
@@ -115,7 +115,7 @@ func UpdateBuilding(c *fiber.Ctx) error {
 	}
 
 	building.Name = utils.UpdateIfNew(ubr.Name, building.Name).(string)
-	building.Address = utils.UpdateIfNew(ubr.Address, building.Address).(models.Place)
+	building.Address = utils.UpdateIfNew(ubr.Address, building.Address).(models2.Place)
 	building.Description = utils.UpdateIfNew(ubr.Description, building.Description).(string)
 	building.Amenities = utils.UpdateIfNew(ubr.Amenities, building.Amenities).([]string)
 	building.Images = utils.UpdateIfNew(ubr.Images, building.Images).([]string)
@@ -131,7 +131,7 @@ func UpdateBuildingRealtor(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
-	var realtor models.Realtor
+	var realtor models2.Realtor
 	if err := findRealtor(realtorID, &realtor); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -140,7 +140,7 @@ func UpdateBuildingRealtor(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
-	var building models.Building
+	var building models2.Building
 	if err = findBuilding(id, &building); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -158,7 +158,7 @@ func DeleteBuilding(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
 
-	var building models.Building
+	var building models2.Building
 
 	database.Database.Db.First(&building, id)
 	if building.Name == "" {
