@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package application;
+option go_package = "github.com/jalexanderII/solid-pancake";
+
+service ApplicationService{
+  rpc Apply (ApplicantFormRequest) returns (ApplicantFormResponse);
+}
+
+message ApplicantFormRequest {
+  uint32 id = 1;
+  uint32 user_id = 2;
+  uint32 apartment_id = 3;
+  string name = 4;
+  string social_security = 5;
+  string date_of_birth = 6;
+  string drivers_license = 7;
+  Apartment apartment = 8;
+  Building building = 9;
+  Place previous_address = 10;
+  string landlord = 11;
+  string landlord_number = 12;
+  string employer = 13;
+  int32 salary = 14;
+}
+
+message Apartment {
+  string name = 1;
+  Place address = 2;
+  int32 rent = 3;
+  double size = 4;
+  Features       features = 5;
+  ListingMetrics listing_metrics = 6;
+  string description = 7;
+  repeated string amenities = 8;
+  repeated string images = 9;
+  Building    building = 10;
+  Realtor     realtor = 11;
+}
+
+message Building {
+  string name = 1;
+  Place address = 2;
+  string description = 7;
+  repeated string amenities = 8;
+  repeated string images = 9;
+  Realtor     realtor = 11;
+}
+
+message Place {
+  string address = 1;
+  string street = 2;
+  string city = 3;
+  string state = 4;
+  string zip = 5;
+  string unit = 6;
+  double lat = 7;
+  double lng = 8;
+}
+
+message Features {
+  int32  int = 1;
+  double Baths = 2;
+  int32 Rooms = 3;
+}
+
+message ListingMetrics {
+  string available_on = 1;
+  int32 days_on_market = 2;
+}
+
+message Realtor {
+  string name = 1;
+  string company = 2;
+  string phone_number = 3;
+}
+
+message ApplicantFormResponse {
+  uint32 reference_id = 1;
+}
