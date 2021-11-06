@@ -1,0 +1,29 @@
+package models
+
+import (
+	"github.com/jalexanderII/solid-pancake/services/realestate/models"
+	"gorm.io/gorm"
+)
+
+type ApplicantFormRequest struct {
+	gorm.Model
+	Name            string           `gorm:"index" json:"name"`
+	SocialSecurity  string           `json:"social_security,omitempty"`
+	DateOfBirth     string           `json:"date_of_birth,omitempty"`
+	DriversLicense  string           `json:"drivers_license,omitempty"`
+	PreviousAddress models.Place     `gorm:"embedded" json:"previous_address,omitempty"`
+	Landlord        string           `json:"landlord,omitempty"`
+	LandlordNumber  string           `json:"landlord_number,omitempty"`
+	Employer        string           `json:"employer,omitempty"`
+	Salary          int32            `json:"salary,omitempty"`
+	ApartmentRef    int              `json:"apartment_id"`
+	Apartment       models.Apartment `gorm:"foreignKey:ApartmentRef"`
+}
+
+type ApplicantFormResponse struct {
+	gorm.Model
+	ReferenceId    uint32               `gorm:"index" json:"reference_id"`
+	Status         string               `json:"status,omitempty"`
+	ApplicationRef int                  `json:"application_id"`
+	Application    ApplicantFormRequest `gorm:"foreignKey:ApplicationRef"`
+}

@@ -2,34 +2,34 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	handlers2 "github.com/jalexanderII/solid-pancake/services/realestate/handlers"
+	RealEstateH "github.com/jalexanderII/solid-pancake/services/realestate/handlers"
 )
 
 func SetupRealEstateRoutes(v1 fiber.Router) {
 	// Realtor endpoints
 	realtors := v1.Group("/realtors")
-	realtors.Get("/", handlers2.GetRealtors)
-	realtors.Post("/", handlers2.CreateRealtor)
-	realtors.Get("/:id", handlers2.GetRealtor)
-	realtors.Patch("/:id", handlers2.UpdateRealtor)
-	realtors.Delete("/:id", handlers2.DeleteRealtor)
+	realtors.Get("/", RealEstateH.GetRealtors)
+	realtors.Post("/", RealEstateH.CreateRealtor)
+	realtors.Get("/:id", RealEstateH.GetRealtor)
+	realtors.Patch("/:id", RealEstateH.UpdateRealtor)
+	realtors.Delete("/:id", RealEstateH.DeleteRealtor)
 
 	// Building endpoints
 	buildings := v1.Group("/buildings")
-	buildings.Get("/", handlers2.GetBuildings)
-	buildings.Post("/", handlers2.CreateBuilding)
-	buildings.Get("/:id", handlers2.GetBuilding)
-	buildings.Patch("/:id", handlers2.UpdateBuilding)
-	buildings.Patch("/:id/realtor/:realtor_id", handlers2.UpdateBuildingRealtor)
-	buildings.Delete("/:id", handlers2.DeleteBuilding)
+	buildings.Get("/", RealEstateH.GetBuildings)
+	buildings.Post("/", RealEstateH.CreateBuilding)
+	buildings.Get("/:id", RealEstateH.GetBuilding)
+	buildings.Patch("/:id", RealEstateH.UpdateBuilding)
+	buildings.Patch("/:id/realtor/:realtor_id", RealEstateH.UpdateBuildingRealtor)
+	buildings.Delete("/:id", RealEstateH.DeleteBuilding)
 
 	// Apartment endpoints
 	apartments := v1.Group("/apartments")
-	apartments.Get("/", handlers2.GetApartments)
-	apartments.Post("/", handlers2.CreateApartment)
-	apartments.Get("/:id", handlers2.GetApartment)
-	apartments.Patch("/:id", handlers2.UpdateApartment)
-	apartments.Patch("/:id/building/:building_id", handlers2.UpdateApartmentBuilding)
-	apartments.Patch("/:id/realtor/:realtor_id", handlers2.UpdateApartmentRealtor)
-	apartments.Delete("/:id", handlers2.DeleteApartment)
+	apartments.Get("/", RealEstateH.GetApartments)
+	apartments.Post("/", RealEstateH.CreateApartment)
+	apartments.Get("/:id", RealEstateH.GetApartment)
+	apartments.Patch("/:id", RealEstateH.UpdateApartment)
+	apartments.Patch("/:id/building/:building_id", RealEstateH.UpdateApartmentBuilding)
+	apartments.Patch("/:id/realtor/:realtor_id", RealEstateH.UpdateApartmentRealtor)
+	apartments.Delete("/:id", RealEstateH.DeleteApartment)
 }

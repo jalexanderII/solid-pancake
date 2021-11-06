@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
-	"github.com/jalexanderII/solid-pancake/services/realestate/models"
+	RealEstateM "github.com/jalexanderII/solid-pancake/services/realestate/models"
 	"gorm.io/gorm/clause"
 )
 
@@ -17,12 +17,12 @@ type Realtor struct {
 	PhoneNumber string `json:"phone_number,omitempty"`
 }
 
-func CreateResponseRealtor(realtorModel models.Realtor) Realtor {
+func CreateResponseRealtor(realtorModel RealEstateM.Realtor) Realtor {
 	return Realtor{ID: realtorModel.ID, Name: realtorModel.Name, Company: realtorModel.Company, PhoneNumber: realtorModel.PhoneNumber}
 }
 
 func CreateRealtor(c *fiber.Ctx) error {
-	var realtor models.Realtor
+	var realtor RealEstateM.Realtor
 	if err := c.BodyParser(&realtor); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error_message": err.Error(),
@@ -42,7 +42,7 @@ func CreateRealtor(c *fiber.Ctx) error {
 }
 
 func GetRealtors(c *fiber.Ctx) error {
-	var realtors []models.Realtor
+	var realtors []RealEstateM.Realtor
 	database.Database.Db.Find(&realtors)
 
 	responseRealtors := make([]Realtor, len(realtors))
@@ -53,7 +53,7 @@ func GetRealtors(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(responseRealtors)
 }
 
-func findRealtor(id int, realtor *models.Realtor) error {
+func findRealtor(id int, realtor *RealEstateM.Realtor) error {
 	database.Database.Db.Find(&realtor, "id = ?", id)
 	if realtor.ID == 0 {
 		return errors.New("realtor does not exist")
@@ -67,7 +67,7 @@ func GetRealtor(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
 
-	var realtor models.Realtor
+	var realtor RealEstateM.Realtor
 	if err := findRealtor(id, &realtor); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -82,7 +82,7 @@ type UpdateRealtorResponse struct {
 }
 
 func UpdateRealtor(c *fiber.Ctx) error {
-	var realtor models.Realtor
+	var realtor RealEstateM.Realtor
 	var urr UpdateRealtorResponse
 
 	id, err := c.ParamsInt("id")
@@ -108,7 +108,7 @@ func DeleteRealtor(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
 
-	var realtor models.Realtor
+	var realtor RealEstateM.Realtor
 
 	database.Database.Db.First(&realtor, id)
 	if realtor.Name == "" {
