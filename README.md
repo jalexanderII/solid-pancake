@@ -5,8 +5,7 @@ RentEnd2End
 ## Quick start
 
 1. Rename `.env.example` to `.env`
-2. Install [grpc and protoc](https://grpc.io/docs/languages/go/quickstart/)
-   and [Optional[Air]](https://github.com/cosmtrek/air) for server auto-reload.
+2. Install [Optional[Air]](https://github.com/cosmtrek/air) for server auto-reload.
 3. Run project with this command:
 
 ```bash
