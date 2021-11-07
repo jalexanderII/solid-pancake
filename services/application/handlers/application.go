@@ -1,67 +1,14 @@
 package handlers
 
 import (
-	"errors"
+	"fmt"
 	"math/rand"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
 	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
-	RealEstateH "github.com/jalexanderII/solid-pancake/services/realestate/handlers"
-	RealEstateM "github.com/jalexanderII/solid-pancake/services/realestate/models"
 )
-
-type ApplicantFormRequest struct {
-	ID              uint                  `json:"id"`
-	Name            string                `json:"name"`
-	SocialSecurity  string                `json:"social_security,omitempty"`
-	DateOfBirth     string                `json:"date_of_birth,omitempty"`
-	DriversLicense  string                `json:"drivers_license,omitempty"`
-	PreviousAddress RealEstateM.Place     `json:"previous_address,omitempty" validate:"dive"`
-	Landlord        string                `json:"landlord,omitempty"`
-	LandlordNumber  string                `json:"landlord_number,omitempty"`
-	Employer        string                `json:"employer,omitempty"`
-	Salary          int32                 `json:"salary,omitempty"`
-	Apartment       RealEstateH.Apartment `json:"apartment" validate:"dive"`
-}
-
-// CreateApplicantFormRequest Takes in a model and returns a serializer
-func CreateApplicantFormRequest(applicantRequestModel ApplicationM.ApplicantFormRequest) ApplicantFormRequest {
-	var apartment RealEstateM.Apartment
-	database.Database.Db.First(&apartment, applicantRequestModel.ApartmentRef)
-	return ApplicantFormRequest{
-		ID:              applicantRequestModel.ID,
-		Name:            applicantRequestModel.Name,
-		SocialSecurity:  applicantRequestModel.SocialSecurity,
-		DateOfBirth:     applicantRequestModel.DateOfBirth,
-		DriversLicense:  applicantRequestModel.DriversLicense,
-		PreviousAddress: applicantRequestModel.PreviousAddress,
-		Landlord:        applicantRequestModel.Landlord,
-		LandlordNumber:  applicantRequestModel.LandlordNumber,
-		Employer:        applicantRequestModel.Employer,
-		Salary:          applicantRequestModel.Salary,
-		Apartment:       RealEstateH.CreateResponseApartment(apartment),
-	}
-}
-
-type ApplicantFormResponse struct {
-	ID          uint                 `json:"id"`
-	ReferenceId uint32               `json:"reference_id"`
-	Status      string               `json:"status,omitempty"`
-	Application ApplicantFormRequest `json:"application"`
-}
-
-func CreateApplicantFormResponse(applicantResponseModel ApplicationM.ApplicantFormResponse) ApplicantFormResponse {
-	var application ApplicationM.ApplicantFormRequest
-	database.Database.Db.First(&application, applicantResponseModel.ApplicationRef)
-	return ApplicantFormResponse{
-		ID:          applicantResponseModel.ID,
-		ReferenceId: applicantResponseModel.ReferenceId,
-		Status:      applicantResponseModel.Status,
-		Application: CreateApplicantFormRequest(application),
-	}
-}
 
 func Apply(c *fiber.Ctx) error {
 	var application ApplicationM.ApplicantFormRequest
@@ -86,20 +33,28 @@ func Apply(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(responseApplResponse)
 }
 
-func DeleteApplication(c *fiber.Ctx) error {
+// Upload an attachment
+func Upload(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
 
-	var application ApplicationM.ApplicantFormRequest
+	file, err := c.FormFile("attachment")
 
-	database.Database.Db.First(&application, id)
-	if application.Name == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application found with ID"})
+	if err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"errors": [1]string{"Unable to upload your attachment"}})
 	}
-	database.Database.Db.Delete(&application)
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Application successfully deleted"})
+	err = c.SaveFile(file, fmt.Sprintf("./store/upload/%s", file.Filename))
+	if err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"errors": [1]string{"Problem saving file"}})
+	}
+
+	var appResponse ApplicationM.ApplicantFormResponse
+	database.Database.Db.First(&appResponse, id)
+	attachments := append(appResponse.Attachments, file.Filename)
+	database.Database.Db.Model(&appResponse).Update("attachments", attachments)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": fmt.Sprintf("Attachment %s uploaded successfully", file.Filename)})
 }
 
 func CreateFormRequest(application ApplicationM.ApplicantFormRequest) (ApplicantFormRequest, error) {
@@ -110,14 +65,6 @@ func CreateFormRequest(application ApplicationM.ApplicantFormRequest) (Applicant
 	}
 	responseApplRequest.ID = application.ID
 	return responseApplRequest, nil
-}
-
-func findApplication(id int, application *ApplicationM.ApplicantFormRequest) error {
-	database.Database.Db.Find(&application, "id = ?", id)
-	if application.ID == 0 {
-		return errors.New("application does not exist")
-	}
-	return nil
 }
 
 func CreateFormResponse(id int, status string) (ApplicantFormResponse, error) {

@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/jalexanderII/solid-pancake/services/realestate/models"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -24,6 +25,7 @@ type ApplicantFormResponse struct {
 	gorm.Model
 	ReferenceId    uint32               `gorm:"index" json:"reference_id"`
 	Status         string               `json:"status,omitempty"`
+	Attachments    pq.StringArray       `gorm:"type:text[]" json:"attachments"`
 	ApplicationRef int                  `json:"application_id"`
 	Application    ApplicantFormRequest `gorm:"foreignKey:ApplicationRef"`
 }
