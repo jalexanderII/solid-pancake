@@ -15,6 +15,5 @@ If you did not download air you can run the server with 'go run main.go' from th
 # Routes will take the form: http://127.0.0.1:9092/api/v1/...
 # For example http://127.0.0.1:9092/api/v1/apartments = GET method "get all apartments"
 # Routes can be found in the following folders and can be testing with curl or Postman:
-#   - solid-pancake/services/application/routes/routes.go
-#   - solid-pancake/services/realestate/routes/routes.go
+#   - solid-pancake/services/<sub_folder>/routes/routes.go
 ```
