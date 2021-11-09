@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/go-hclog"
 	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
 	RealEstateM "github.com/jalexanderII/solid-pancake/services/realestate/models"
-
+	UserM "github.com/jalexanderII/solid-pancake/services/users/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -33,6 +33,8 @@ func ConnectDb() {
 		&RealEstateM.Apartment{}, &RealEstateM.Building{}, &RealEstateM.Realtor{},
 		// Application models
 		&ApplicationM.ApplicantFormRequest{}, &ApplicationM.ApplicantFormResponse{},
+		// User models
+		&UserM.User{},
 	)
 
 	Database = DbInstance{Db: db}
