@@ -47,7 +47,7 @@ func CheckToken(c *fiber.Ctx) (uint, error) {
 	now := time.Now().Unix()
 
 	// Get claims from JWT.
-	claims, err := ExtractClaims(c)
+	claims, err := extractClaims(c)
 	if err != nil {
 		// Return status 500 and JWT parse error.
 		return 0, c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": true, "msg": err.Error()})
@@ -73,7 +73,7 @@ func CheckToken(c *fiber.Ctx) (uint, error) {
 }
 
 // ExtractClaims func to extract claims from JWT.
-func ExtractClaims(c *fiber.Ctx) (*jwt.StandardClaims, error) {
+func extractClaims(c *fiber.Ctx) (*jwt.StandardClaims, error) {
 	token, err := verifyToken(c)
 	if err != nil {
 		return nil, err
