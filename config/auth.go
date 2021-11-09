@@ -72,6 +72,23 @@ func CheckToken(c *fiber.Ctx) (uint, error) {
 	return uint(issuer), nil
 }
 
+// GenerateNewCookie func for generate a new fiber cookie.
+func GenerateNewCookie(token string, login bool) fiber.Cookie {
+	var t time.Duration
+	if login {
+		t = time.Minute * time.Duration(minutesCount)
+	} else {
+		t = -time.Hour
+	}
+
+	return fiber.Cookie{
+		Name:     "jwt",
+		Value:    token,
+		Expires:  time.Now().Add(t),
+		HTTPOnly: true,
+	}
+}
+
 // ExtractClaims func to extract claims from JWT.
 func extractClaims(c *fiber.Ctx) (*jwt.StandardClaims, error) {
 	token, err := verifyToken(c)
@@ -102,21 +119,4 @@ func verifyToken(c *fiber.Ctx) (*jwt.Token, error) {
 
 func jwtKeyFunc(token *jwt.Token) (interface{}, error) {
 	return []byte(Config("JWT_SECRET_KEY")), nil
-}
-
-// GenerateNewCookie func for generate a new fiber cookie.
-func GenerateNewCookie(token string, login bool) fiber.Cookie {
-	var t time.Duration
-	if login {
-		t = time.Minute * time.Duration(minutesCount)
-	} else {
-		t = -time.Hour
-	}
-
-	return fiber.Cookie{
-		Name:     "jwt",
-		Value:    token,
-		Expires:  time.Now().Add(t),
-		HTTPOnly: true,
-	}
 }
