@@ -9,9 +9,9 @@ import (
 func SetupUserAndAuthRoutes(v1 fiber.Router) {
 	// Auth
 	auth := v1.Group("/auth")
-	auth.Post("/api/register", UserH.Register)
-	auth.Post("/api/login", UserH.Login)
-	auth.Post("/api/logout", UserH.Logout)
+	auth.Post("/register", UserH.Register)
+	auth.Post("/login", UserH.Login)
+	auth.Post("/logout", UserH.Logout)
 
 	// User endpoints
 	users := v1.Group("/users")

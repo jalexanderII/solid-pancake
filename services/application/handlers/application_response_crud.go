@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/jalexanderII/solid-pancake/database"
 	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
 )
 
 type ApplicantFormResponse struct {
 	ID          uint                 `json:"id"`
-	ReferenceId uint32               `json:"reference_id"`
+	ReferenceId uuid.UUID            `json:"reference_id"`
 	Status      string               `json:"status,omitempty"`
 	Attachments []string             `json:"attachments,omitempty"`
 	Application ApplicantFormRequest `json:"application"`
@@ -34,7 +35,7 @@ func GetApplicationResponse(c *fiber.Ctx) error {
 
 	var appResponse ApplicationM.ApplicantFormResponse
 	database.Database.Db.First(&appResponse, id)
-	if appResponse.ReferenceId == 0 {
+	if appResponse.ReferenceId == uuid.Nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application response found with ID"})
 	}
 
@@ -52,7 +53,7 @@ func DeleteApplicationResponse(c *fiber.Ctx) error {
 	var appResponse ApplicationM.ApplicantFormResponse
 
 	database.Database.Db.First(&appResponse, id)
-	if appResponse.ReferenceId == 0 {
+	if appResponse.ReferenceId == uuid.Nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application response found with ID"})
 	}
 	database.Database.Db.Delete(&appResponse)

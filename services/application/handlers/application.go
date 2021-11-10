@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"math/rand"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
 	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
@@ -73,7 +73,7 @@ func CreateFormResponse(id int, status string) (ApplicantFormResponse, error) {
 		return ApplicantFormResponse{}, err
 	}
 	appResponse := ApplicationM.ApplicantFormResponse{
-		ReferenceId:    mutate(appModel.ID),
+		ReferenceId:    uuid.New(),
 		Status:         status,
 		ApplicationRef: int(appModel.ID),
 		Application:    appModel,
@@ -85,10 +85,6 @@ func CreateFormResponse(id int, status string) (ApplicantFormResponse, error) {
 	}
 	responseApplResponse.ID = appResponse.ID
 	return responseApplResponse, nil
-}
-
-func mutate(i uint) uint32 {
-	return uint32(rand.Intn(100) + int(i)*5)
 }
 
 func ApplicationReviewProcess(responseApplRequest ApplicantFormRequest) (ApplicantFormResponse, error) {

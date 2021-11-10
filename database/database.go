@@ -3,6 +3,7 @@ package database
 import (
 	"github.com/hashicorp/go-hclog"
 	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
+	LifeCycleM "github.com/jalexanderII/solid-pancake/services/lifecycle/models"
 	RealEstateM "github.com/jalexanderII/solid-pancake/services/realestate/models"
 	UserM "github.com/jalexanderII/solid-pancake/services/users/models"
 	"gorm.io/driver/sqlite"
@@ -35,6 +36,8 @@ func ConnectDb() {
 		&ApplicationM.ApplicantFormRequest{}, &ApplicationM.ApplicantFormResponse{},
 		// User models
 		&UserM.User{},
+		// LifeCycle models
+		&LifeCycleM.RentalDetails{}, &LifeCycleM.PaymentRequest{}, &LifeCycleM.PaymentResponse{}, &LifeCycleM.PaymentConfirmation{},
 	)
 
 	Database = DbInstance{Db: db}

@@ -6,6 +6,7 @@ import (
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
 	ApplicationRoutes "github.com/jalexanderII/solid-pancake/services/application/routes"
+	LifeCycleRoutes "github.com/jalexanderII/solid-pancake/services/lifecycle/routes"
 	RestRoutes "github.com/jalexanderII/solid-pancake/services/realestate/routes"
 	UserRoutes "github.com/jalexanderII/solid-pancake/services/users/routes"
 )
@@ -20,6 +21,7 @@ func main() {
 	RestRoutes.SetupRealEstateRoutes(v1)
 	ApplicationRoutes.SetupApplicationRoutes(v1)
 	UserRoutes.SetupUserAndAuthRoutes(v1)
+	LifeCycleRoutes.SetupLifeCycleRoutes(v1)
 
 	// Start server (with graceful shutdown).
 	config.StartServerWithGracefulShutdown(app)
