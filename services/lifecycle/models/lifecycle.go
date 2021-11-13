@@ -20,7 +20,7 @@ type RentalDetails struct {
 type PaymentRequest struct {
 	// gorm.Model Embedded Struct, which includes fields ID, CreatedAt, UpdatedAt, DeletedAt
 	gorm.Model
-	Purpose string     `gorm:"type:enum('rent', 'other');default:'rent'" json:"purpose"`
+	Purpose string     `json:"purpose"`
 	Amount  float32    `json:"amount"`
 	Period  string     `json:"period"`
 	UserRef int        `json:"user_id"`
@@ -39,20 +39,20 @@ type PaymentResponse struct {
 	PaymentRequest PaymentRequest        `gorm:"foreignKey:PaymentRef"`
 }
 
-type PaymentConfirmation struct {
-	ReferenceId uuid.UUID       `gorm:"type:uuid;default:uuid_generate_v4()" json:"reference_id"`
-	Timestamp   int64           `gorm:"autoCreateTime" json:"time_stamp"` // Use unix seconds as creating time
-	Status      string          `json:"status"`
-	PaymentRef  int             `json:"payment_id"`
-	Payment     PaymentResponse `gorm:"foreignKey:PaymentRef"`
-	OnTime      bool            `json:"on_time"`
-}
-
 type PaymentInfo struct {
-	Purpose    string  `gorm:"type:enum('rent', 'other');default:'rent'" json:"purpose"`
+	Purpose    string  `json:"purpose"`
 	Amount     float32 `json:"amount"`
 	CardNumber string  `json:"card_number"`
 	NameOnCard string  `json:"name"`
 	CVC        int     `json:"cvc"`
 	ZipCode    int     `json:"zip_code"`
+}
+
+type PaymentConfirmation struct {
+	ReferenceId uuid.UUID       `gorm:"type:uuid;default:uuid_generate_v4()" json:"reference_id"`
+	Timestamp   int64           `gorm:"autoCreateTime" json:"time_stamp"`
+	Status      string          `json:"status"`
+	PaymentRef  int             `json:"payment_id"`
+	Payment     PaymentResponse `gorm:"foreignKey:PaymentRef"`
+	OnTime      bool            `json:"on_time"`
 }

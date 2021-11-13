@@ -39,5 +39,7 @@ func RequestPayment(c *fiber.Ctx) error {
 	if err := database.Database.Db.Create(&paymentRequest).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Couldn't create payment request", "data": err.Error()})
 	}
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "submitted payment request", "user": paymentRequest.User.Name})
+	paymentRequestResponse := CreatePaymentRequest(paymentRequest)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "submitted payment request", "user": paymentRequestResponse.User.Name})
 }

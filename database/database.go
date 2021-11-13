@@ -29,7 +29,7 @@ func ConnectDb() {
 	db.Logger = logger.Default.LogMode(logger.Info)
 	// Migrate the schema
 	dbLogger.Info("Running Migrations")
-	db.AutoMigrate(
+	err = db.AutoMigrate(
 		// Real estate models
 		&RealEstateM.Apartment{}, &RealEstateM.Building{}, &RealEstateM.Realtor{},
 		// Application models
@@ -37,8 +37,12 @@ func ConnectDb() {
 		// User models
 		&UserM.User{},
 		// LifeCycle models
-		&LifeCycleM.RentalDetails{}, &LifeCycleM.PaymentRequest{}, &LifeCycleM.PaymentResponse{}, &LifeCycleM.PaymentConfirmation{},
+		&LifeCycleM.PaymentConfirmation{},
+		// &LifeCycleM.RentalDetails{}, &LifeCycleM.PaymentRequest{}, &LifeCycleM.PaymentResponse{}, &LifeCycleM.PaymentConfirmation{},
 	)
+	if err != nil {
+		dbLogger.Error("failed to migrate", "error", err)
+	}
 
 	Database = DbInstance{Db: db}
 }

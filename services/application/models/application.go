@@ -24,7 +24,7 @@ type ApplicantFormRequest struct {
 
 type ApplicantFormResponse struct {
 	gorm.Model
-	ReferenceId    uuid.UUID            `gorm:"type:uuid;default:uuid_generate_v4()"  json:"reference_id"`
+	ReferenceId    uuid.UUID            `gorm:"type:uuid;default:uuid_generate_v4()" json:"reference_id"`
 	Status         string               `json:"status,omitempty"`
 	Attachments    pq.StringArray       `gorm:"type:text[]" json:"attachments"`
 	ApplicationRef int                  `json:"application_id"`
