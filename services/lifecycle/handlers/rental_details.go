@@ -7,6 +7,7 @@ import (
 	"github.com/jalexanderII/solid-pancake/database"
 	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
 	LifeCycleM "github.com/jalexanderII/solid-pancake/services/lifecycle/models"
+	"github.com/jalexanderII/solid-pancake/utils"
 	"gorm.io/gorm"
 )
 
@@ -254,14 +255,10 @@ func createApplicationData(a *ApplicationData) error {
 	prevAvg := rentalDetails.AverageSalary
 	updatedRentalDetails := LifeCycleM.RentalDetails{
 		TotalApplications: prevTotal + 1,
-		AverageSalary:     addToAverage(prevAvg, prevTotal, application.Salary),
+		AverageSalary:     utils.AddToAverage(prevAvg, prevTotal, application.Salary),
 	}
 	if err := database.Database.Db.Create(&updatedRentalDetails).Error; err != nil {
 		return fmt.Errorf("couldn't create rental details record, %v", err)
 	}
 	return nil
-}
-
-func addToAverage(prevAvg float32, prevTotal int32, value int32) float32 {
-	return (float32(prevTotal)*prevAvg + float32(value)) / float32(prevTotal+1)
 }

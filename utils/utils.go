@@ -17,7 +17,7 @@ func IfThenElse(condition bool, a interface{}, b interface{}) interface{} {
 
 // UpdateIfNew returns the updated value or the same value if not changed
 func UpdateIfNew(new interface{}, old interface{}) interface{} {
-	return IfThenElse(new==old, old, new)
+	return IfThenElse(new == old, old, new)
 }
 
 // MakeSyncPatchCall makes a patch call to the specified url to keep gorm models in sync
@@ -45,4 +45,8 @@ func MakeSyncPatchCall(url string, body interface{}, method string) ([]byte, err
 	}
 
 	return resBody, nil
+}
+
+func AddToAverage(prevAvg float32, prevTotal int32, value int32) float32 {
+	return (float32(prevTotal)*prevAvg + float32(value)) / float32(prevTotal+1)
 }
