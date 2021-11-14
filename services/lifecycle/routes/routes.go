@@ -16,4 +16,9 @@ func SetupLifeCycleRoutes(v1 fiber.Router) {
 	// Payment response endpoints
 	pay := payments.Group("/pay")
 	pay.Post("/", LifeCycleH.Pay)
+
+	// Data endpoints
+	data := payments.Group("/data")
+	data.Get("/", LifeCycleH.GetRentalDetails)
+	data.Get("/:id", LifeCycleH.GetUserRentalDetails)
 }

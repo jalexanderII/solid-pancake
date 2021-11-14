@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -47,6 +48,13 @@ func PaymentConfirmationResponse(id int, status string, onTime bool) (PaymentCon
 		return PaymentConfirmation{}, err
 	}
 	paymentConfirmationResponse := CreatePaymentConfirmation(paymentConfirmation)
+
+	paymentRentalDetails := &RentalDetailsData{Data: &PaymentData{&paymentConfirmation}}
+	err := SendToDataPipeline(paymentRentalDetails)
+	if err != nil {
+		return PaymentConfirmation{}, fmt.Errorf("error processing rental details %v", err)
+	}
+
 	return paymentConfirmationResponse, nil
 }
 

@@ -37,8 +37,7 @@ func ConnectDb() {
 		// User models
 		&UserM.User{},
 		// LifeCycle models
-		&LifeCycleM.PaymentConfirmation{},
-		// &LifeCycleM.RentalDetails{}, &LifeCycleM.PaymentRequest{}, &LifeCycleM.PaymentResponse{}, &LifeCycleM.PaymentConfirmation{},
+		&LifeCycleM.RentalDetails{}, &LifeCycleM.UserRentalDetails{}, &LifeCycleM.PaymentRequest{}, &LifeCycleM.PaymentResponse{}, &LifeCycleM.PaymentConfirmation{},
 	)
 	if err != nil {
 		dbLogger.Error("failed to migrate", "error", err)

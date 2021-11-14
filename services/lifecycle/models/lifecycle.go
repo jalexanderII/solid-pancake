@@ -10,11 +10,23 @@ import (
 type RentalDetails struct {
 	// gorm.Model Embedded Struct, which includes fields ID, CreatedAt, UpdatedAt, DeletedAt
 	gorm.Model
+	TotalPayments         int32   `json:"total_payments"`
+	OnTimePayments        int32   `json:"on_time_payments"`
+	PercentPaymentsOnTime float32 `json:"percent_payments_on_time"`
+	TotalRentPaid         int32   `json:"total_rent_paid"`
+	TotalApplications     int32   `json:"total_applications"`
+	AverageSalary         float32 `json:"average_salary"`
+}
+
+type UserRentalDetails struct {
+	// gorm.Model Embedded Struct, which includes fields ID, CreatedAt, UpdatedAt, DeletedAt
+	gorm.Model
 	UserRef               int        `json:"user_id"`
 	User                  UserM.User `gorm:"foreignKey:UserRef"`
-	OnTimePayments        int        `json:"on_time_payments"`
+	TotalPayments         int32      `json:"total_payments"`
+	OnTimePayments        int32      `json:"on_time_payments"`
 	PercentPaymentsOnTime float32    `json:"percent_payments_on_time"`
-	TotalRentPaid         int        `json:"total_rent_paid"`
+	TotalRentPaid         int32      `json:"total_rent_paid"`
 }
 
 type PaymentRequest struct {
@@ -44,8 +56,8 @@ type PaymentInfo struct {
 	Amount     float32 `json:"amount"`
 	CardNumber string  `json:"card_number"`
 	NameOnCard string  `json:"name"`
-	CVC        int     `json:"cvc"`
-	ZipCode    int     `json:"zip_code"`
+	CVC        int32   `json:"cvc"`
+	ZipCode    int32   `json:"zip_code"`
 }
 
 type PaymentConfirmation struct {

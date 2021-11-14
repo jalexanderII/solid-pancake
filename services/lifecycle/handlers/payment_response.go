@@ -62,5 +62,6 @@ func Pay(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Error with payment process", "data": err.Error()})
 	}
+
 	return c.Status(fiber.StatusOK).JSON(paymentConfirmationResponse)
 }

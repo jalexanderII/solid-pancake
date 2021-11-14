@@ -8,6 +8,7 @@ import (
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
 	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
+	LifeCycleH "github.com/jalexanderII/solid-pancake/services/lifecycle/handlers"
 )
 
 func Apply(c *fiber.Ctx) error {
@@ -84,6 +85,15 @@ func CreateFormResponse(id int, status string) (ApplicantFormResponse, error) {
 		return ApplicantFormResponse{}, err
 	}
 	responseApplResponse.ID = appResponse.ID
+
+	applicationRentalDetails := &LifeCycleH.RentalDetailsData{
+		Data: &LifeCycleH.ApplicationData{ApplicationData: &appResponse},
+	}
+	err := LifeCycleH.SendToDataPipeline(applicationRentalDetails)
+	if err != nil {
+		return ApplicantFormResponse{}, fmt.Errorf("error processing rental details %v", err)
+	}
+
 	return responseApplResponse, nil
 }
 

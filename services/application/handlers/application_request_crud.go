@@ -8,6 +8,8 @@ import (
 	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
 	RealEstateH "github.com/jalexanderII/solid-pancake/services/realestate/handlers"
 	RealEstateM "github.com/jalexanderII/solid-pancake/services/realestate/models"
+	UserH "github.com/jalexanderII/solid-pancake/services/users/handlers"
+	UserM "github.com/jalexanderII/solid-pancake/services/users/models"
 )
 
 type ApplicantFormRequest struct {
@@ -22,15 +24,21 @@ type ApplicantFormRequest struct {
 	Employer        string                `json:"employer,omitempty"`
 	Salary          int32                 `json:"salary,omitempty"`
 	Apartment       RealEstateH.Apartment `json:"apartment" validate:"dive"`
+	User            UserH.User            `json:"user" validate:"dive"`
 }
 
 // CreateApplicantFormRequest Takes in a model and returns a serializer
 func CreateApplicantFormRequest(applicantRequestModel ApplicationM.ApplicantFormRequest) ApplicantFormRequest {
-	var apartment RealEstateM.Apartment
+	var (
+		apartment RealEstateM.Apartment
+		user      UserM.User
+	)
 	database.Database.Db.First(&apartment, applicantRequestModel.ApartmentRef)
+	database.Database.Db.First(&user, applicantRequestModel.UserRef)
 	return ApplicantFormRequest{
 		ID:              applicantRequestModel.ID,
 		Name:            applicantRequestModel.Name,
+		User:            UserH.CreateResponseUser(user),
 		SocialSecurity:  applicantRequestModel.SocialSecurity,
 		DateOfBirth:     applicantRequestModel.DateOfBirth,
 		DriversLicense:  applicantRequestModel.DriversLicense,
@@ -69,9 +77,9 @@ func GetApplication(c *fiber.Ctx) error {
 	}
 
 	var application ApplicationM.ApplicantFormRequest
-	database.Database.Db.First(&application, id)
-	if application.Name == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application found with ID"})
+	database.Database.Db.Find(&application, "user_id = ?", id)
+	if application.ID == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application found four user with that ID"})
 	}
 
 	responseApplRequest := CreateApplicantFormRequest(application)
