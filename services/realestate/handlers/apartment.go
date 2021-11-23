@@ -7,8 +7,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
+	Q "github.com/jalexanderII/solid-pancake/services/realestate/db_queries"
 	RealEstateM "github.com/jalexanderII/solid-pancake/services/realestate/models"
 	"github.com/jalexanderII/solid-pancake/utils"
+	"github.com/lib/pq"
 )
 
 // Apartment To be used as a serializer
@@ -49,6 +51,14 @@ func CreateResponseApartment(apartmentModel RealEstateM.Apartment) Apartment {
 	}
 }
 
+func toListingAmenities(amenities pq.StringArray) []utils.ListingAmenities {
+	ListingAmenities := make([]utils.ListingAmenities, len(amenities))
+	for la := range amenities {
+		ListingAmenities = append(ListingAmenities, utils.ListingAmenities(la))
+	}
+	return ListingAmenities
+}
+
 func CreateApartment(c *fiber.Ctx) error {
 	var apartment RealEstateM.Apartment
 
@@ -72,6 +82,34 @@ func CreateApartment(c *fiber.Ctx) error {
 func GetApartments(c *fiber.Ctx) error {
 	var apartments []RealEstateM.Apartment
 	database.Database.Db.Find(&apartments)
+	responseApartments := make([]Apartment, len(apartments))
+
+	for idx, apartment := range apartments {
+		responseApartments[idx] = CreateResponseApartment(apartment)
+	}
+	return c.Status(fiber.StatusOK).JSON(responseApartments)
+}
+
+func SearchByNeighborhood(c *fiber.Ctx) error {
+	type Query struct {
+		Neighborhoods []string `json:"neighborhoods"`
+		MaxBeds       int      `json:"beds"`
+		MaxBath       int      `json:"baths"`
+		MinPrice      int      `json:"min_price"`
+		MaxPrice      int      `json:"max_price"`
+	}
+	var query Query
+	if err := c.BodyParser(&query); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
+	}
+	var apartments []RealEstateM.Apartment
+
+	database.Database.Db.Scopes(
+		Q.NeighborhoodInQuery(query.Neighborhoods),
+		Q.PriceBetween(query.MinPrice, query.MaxPrice),
+		Q.BathsAtMost(query.MaxBath),
+		Q.BedsAtMost(query.MaxBeds),
+	).Find(&apartments)
 	responseApartments := make([]Apartment, len(apartments))
 
 	for idx, apartment := range apartments {

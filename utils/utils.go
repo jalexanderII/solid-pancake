@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 // IfThenElse evaluates a condition, if true returns the first parameter otherwise the second
@@ -49,4 +50,12 @@ func MakeSyncPatchCall(url string, body interface{}, method string) ([]byte, err
 
 func AddToAverage(prevAvg float32, prevTotal int32, value int32) float32 {
 	return (float32(prevTotal)*prevAvg + float32(value)) / float32(prevTotal+1)
+}
+
+func EnumName(m map[int32]string, v int32) string {
+	s, ok := m[v]
+	if ok {
+		return s
+	}
+	return strconv.Itoa(int(v))
 }

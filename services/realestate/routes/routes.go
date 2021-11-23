@@ -26,6 +26,7 @@ func SetupRealEstateRoutes(v1 fiber.Router) {
 	// Apartment endpoints
 	apartments := v1.Group("/apartments")
 	apartments.Get("/", RealEstateH.GetApartments)
+	apartments.Get("/search", RealEstateH.SearchByNeighborhood)
 	apartments.Post("/", RealEstateH.CreateApartment)
 	apartments.Get("/:id", RealEstateH.GetApartment)
 	apartments.Patch("/:id", RealEstateH.UpdateApartment)
