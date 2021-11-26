@@ -1,0 +1,85 @@
+{ "items": [
+{
+  "buildings": [
+    {
+      "name": "333 Park Avenue South",
+      "address": {
+        "address": "333 Park Avenue South",
+        "street": "333 Park Avenue South",
+        "city": "New York",
+        "state": "New York",
+        "zip": "10010",
+        "unit": "",
+        "lat": 40.741150,
+        "lng": -73.985290
+      },
+      "description": "333 Park Avenue South is a Building located in the Flatiron neighborhood in Manhattan, NY. 333 Park Avenue South was built in 1900 and has 5 stories and 13 units.",
+      "amenities": [
+        "Cats Only - No Dogs",
+        "Elevator"
+      ],
+      "realtor_id": 1
+    }
+  ]
+},
+{
+  "realtors": [
+    {
+      "name": "Miles Davis-Bosch",
+      "address": {
+        "address": "333 Park Avenue South",
+        "street": "333 Park Avenue South",
+        "city": "New York",
+        "state": "New York",
+        "zip": "10010",
+        "unit": "",
+        "lat": 40.741150,
+        "lng": -73.985290
+      },
+      "phone_number": "718-531-8899"
+    }
+  ]
+},
+  {
+    "apartments": [
+      {
+        "name": "333 Park Avenue South #4F",
+        "address": {
+          "address": "333 Park Avenue South #4F",
+          "street": "333 Park Avenue South",
+          "city": "New York",
+          "state": "New York",
+          "zip": "10010",
+          "unit": "4F",
+          "lat": 40.741150,
+          "lng": -73.985290
+        },
+        "rent": 5000,
+        "size": 1300,
+        "features": {
+          "beds": 1,
+          "baths": 1,
+          "rooms": 2
+        },
+        "listing_metrics": {
+          "available_on": "11/1/2021",
+          "last_price_change": {
+            "rent": 5000,
+            "price_delta": 0,
+            "changed_on": "11/1/2021"
+          },
+          "days_on_market": 17
+        },
+        "description": "This beautiful 1300sq foot loft with incredible natural light is located on 25th and Park Ave. South. The 1 bedroom 1 bathroom apartment has floor-to-ceiling windows that give endless amounts of natural light. The apartment also features an in-unit washer/dryer as well as a private storage space. The unit is located in a Coop building with both a passenger and freight elevator. 333 Park Avenue South is a historic building designed by J.C. Markham in 1875. Over the years 333 Park Avenue has been called home by numerous musicians, designers, and artists. This historic loft is just 1 block from Madison Square Park with everything that this great neighborhood has to offer. Around the corner from spots like The Little Beet Table, Eataly as well as the Union Square Greenmarket.",
+        "amenities": ["Cats Only - No Dogs", "Elevator", "Washer / Dryer in Unit"],
+        "building_id": 1,
+        "price_history": {
+          "date": ["11/1/2021"],
+          "rent": [5000]
+        },
+        "realtor_id": 1
+      }
+    ]
+  }
+  ]
+}
