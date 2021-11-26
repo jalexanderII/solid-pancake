@@ -10,7 +10,6 @@ import (
 	Q "github.com/jalexanderII/solid-pancake/services/realestate/db_queries"
 	RealEstateM "github.com/jalexanderII/solid-pancake/services/realestate/models"
 	"github.com/jalexanderII/solid-pancake/utils"
-	"github.com/lib/pq"
 )
 
 // Apartment To be used as a serializer
@@ -49,14 +48,6 @@ func CreateResponseApartment(apartmentModel RealEstateM.Apartment) Apartment {
 		Building:       CreateResponseBuilding(building),
 		Realtor:        CreateResponseRealtor(realtor),
 	}
-}
-
-func toListingAmenities(amenities pq.StringArray) []utils.ListingAmenities {
-	ListingAmenities := make([]utils.ListingAmenities, len(amenities))
-	for la := range amenities {
-		ListingAmenities = append(ListingAmenities, utils.ListingAmenities(la))
-	}
-	return ListingAmenities
 }
 
 func CreateApartment(c *fiber.Ctx) error {
