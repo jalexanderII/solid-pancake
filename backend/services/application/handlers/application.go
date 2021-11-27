@@ -46,7 +46,7 @@ func Upload(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"errors": [1]string{"Unable to upload your attachment"}})
 	}
-	err = c.SaveFile(file, fmt.Sprintf("./store/upload/%s", file.Filename))
+	err = c.SaveFile(file, fmt.Sprintf("./services/application/store/upload/%s", file.Filename))
 	if err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"errors": [1]string{"Problem saving file"}})
 	}
