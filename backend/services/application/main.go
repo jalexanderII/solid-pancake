@@ -9,7 +9,7 @@ import (
 	"net"
 	"time"
 
-	applicationpb "github.com/jalexanderII/solid-pancake/gen/applicaiton"
+	applicationpb "github.com/jalexanderII/solid-pancake/gen/application"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

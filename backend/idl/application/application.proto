@@ -1,6 +1,4 @@
 syntax = "proto3";
-
-package application;
 option go_package = "github.com/jalexanderII/solid-pancake/gen/application";
 
 import "common/types.proto";

@@ -39,7 +39,7 @@ func NewApplicationClient(cc grpc.ClientConnInterface) ApplicationClient {
 
 func (c *applicationClient) Apply(ctx context.Context, in *ApplicationReq, opts ...grpc.CallOption) (*ApplicationRes, error) {
 	out := new(ApplicationRes)
-	err := c.cc.Invoke(ctx, "/application.Application/Apply", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Application/Apply", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *applicationClient) Apply(ctx context.Context, in *ApplicationReq, opts 
 
 func (c *applicationClient) ReadApplicationRequest(ctx context.Context, in *common.ID, opts ...grpc.CallOption) (*ApplicationReq, error) {
 	out := new(ApplicationReq)
-	err := c.cc.Invoke(ctx, "/application.Application/ReadApplicationRequest", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Application/ReadApplicationRequest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *applicationClient) ReadApplicationRequest(ctx context.Context, in *comm
 
 func (c *applicationClient) UpdateApplicationRequest(ctx context.Context, in *ApplicationReq, opts ...grpc.CallOption) (*ApplicationReq, error) {
 	out := new(ApplicationReq)
-	err := c.cc.Invoke(ctx, "/application.Application/UpdateApplicationRequest", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Application/UpdateApplicationRequest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *applicationClient) UpdateApplicationRequest(ctx context.Context, in *Ap
 
 func (c *applicationClient) DeleteApplicationRequest(ctx context.Context, in *common.ID, opts ...grpc.CallOption) (*ApplicationReq, error) {
 	out := new(ApplicationReq)
-	err := c.cc.Invoke(ctx, "/application.Application/DeleteApplicationRequest", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Application/DeleteApplicationRequest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *applicationClient) DeleteApplicationRequest(ctx context.Context, in *co
 
 func (c *applicationClient) ListApplicationRequests(ctx context.Context, in *common.Empty, opts ...grpc.CallOption) (*ListApplicationReqOut, error) {
 	out := new(ListApplicationReqOut)
-	err := c.cc.Invoke(ctx, "/application.Application/ListApplicationRequests", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Application/ListApplicationRequests", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (c *applicationClient) ListApplicationRequests(ctx context.Context, in *com
 
 func (c *applicationClient) ReadApplicationResponse(ctx context.Context, in *common.ID, opts ...grpc.CallOption) (*ApplicationRes, error) {
 	out := new(ApplicationRes)
-	err := c.cc.Invoke(ctx, "/application.Application/ReadApplicationResponse", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Application/ReadApplicationResponse", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (c *applicationClient) ReadApplicationResponse(ctx context.Context, in *com
 
 func (c *applicationClient) DeleteApplicationResponse(ctx context.Context, in *common.ID, opts ...grpc.CallOption) (*ApplicationRes, error) {
 	out := new(ApplicationRes)
-	err := c.cc.Invoke(ctx, "/application.Application/DeleteApplicationResponse", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Application/DeleteApplicationResponse", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (c *applicationClient) DeleteApplicationResponse(ctx context.Context, in *c
 
 func (c *applicationClient) ListApplicationResponse(ctx context.Context, in *common.Empty, opts ...grpc.CallOption) (*ListApplicationResOut, error) {
 	out := new(ListApplicationResOut)
-	err := c.cc.Invoke(ctx, "/application.Application/ListApplicationResponse", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Application/ListApplicationResponse", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +173,7 @@ func _Application_Apply_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/application.Application/Apply",
+		FullMethod: "/Application/Apply",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApplicationServer).Apply(ctx, req.(*ApplicationReq))
@@ -191,7 +191,7 @@ func _Application_ReadApplicationRequest_Handler(srv interface{}, ctx context.Co
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/application.Application/ReadApplicationRequest",
+		FullMethod: "/Application/ReadApplicationRequest",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApplicationServer).ReadApplicationRequest(ctx, req.(*common.ID))
@@ -209,7 +209,7 @@ func _Application_UpdateApplicationRequest_Handler(srv interface{}, ctx context.
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/application.Application/UpdateApplicationRequest",
+		FullMethod: "/Application/UpdateApplicationRequest",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApplicationServer).UpdateApplicationRequest(ctx, req.(*ApplicationReq))
@@ -227,7 +227,7 @@ func _Application_DeleteApplicationRequest_Handler(srv interface{}, ctx context.
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/application.Application/DeleteApplicationRequest",
+		FullMethod: "/Application/DeleteApplicationRequest",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApplicationServer).DeleteApplicationRequest(ctx, req.(*common.ID))
@@ -245,7 +245,7 @@ func _Application_ListApplicationRequests_Handler(srv interface{}, ctx context.C
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/application.Application/ListApplicationRequests",
+		FullMethod: "/Application/ListApplicationRequests",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApplicationServer).ListApplicationRequests(ctx, req.(*common.Empty))
@@ -263,7 +263,7 @@ func _Application_ReadApplicationResponse_Handler(srv interface{}, ctx context.C
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/application.Application/ReadApplicationResponse",
+		FullMethod: "/Application/ReadApplicationResponse",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApplicationServer).ReadApplicationResponse(ctx, req.(*common.ID))
@@ -281,7 +281,7 @@ func _Application_DeleteApplicationResponse_Handler(srv interface{}, ctx context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/application.Application/DeleteApplicationResponse",
+		FullMethod: "/Application/DeleteApplicationResponse",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApplicationServer).DeleteApplicationResponse(ctx, req.(*common.ID))
@@ -299,7 +299,7 @@ func _Application_ListApplicationResponse_Handler(srv interface{}, ctx context.C
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/application.Application/ListApplicationResponse",
+		FullMethod: "/Application/ListApplicationResponse",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApplicationServer).ListApplicationResponse(ctx, req.(*common.Empty))
@@ -311,7 +311,7 @@ func _Application_ListApplicationResponse_Handler(srv interface{}, ctx context.C
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Application_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "application.Application",
+	ServiceName: "Application",
 	HandlerType: (*ApplicationServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
