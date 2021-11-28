@@ -11,7 +11,14 @@ import (
 	LifeCycleH "github.com/jalexanderII/solid-pancake/services/lifecycle/handlers"
 )
 
-func Apply(c *fiber.Ctx) error {
+type Handler struct {}
+
+func NewHandler() *Handler {
+	h := &Handler{}
+	return h
+}
+
+func (h *Handler) Apply(c *fiber.Ctx) error {
 	var application ApplicationM.ApplicantFormRequest
 	if err := c.BodyParser(&application); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error_message": err.Error()})
