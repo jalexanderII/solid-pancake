@@ -11,4 +11,5 @@ require (
 	golang.org/x/text v0.3.0 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
+	github.com/jalexanderII/solid-pancake v0.0.0-20211128000603-3b17a13c49e9
 )

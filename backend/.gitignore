@@ -33,6 +33,3 @@ backend/tmp/
 # Database
 *.sqlite
 *.db
-
-#Proto
-gen/
