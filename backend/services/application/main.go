@@ -11,9 +11,7 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-var (
-	applicationAddr              = "localhost:9093"
-)
+var applicationAddr = "localhost:9093"
 
 func main() {
 	// Configure 'log' package to give file name and line number on eg. log.Fatal
