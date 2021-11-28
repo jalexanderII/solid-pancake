@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package types;
+option go_package = "github.com/jalexanderII/solid-pancake/gen/common";
+
+message Place {
+  string address =1;
+  string street =2;
+  string city =3;
+  string state=4;
+  string zip=5;
+  string neighborhood=6;
+  string unit=7;
+  double lat=8;
+  double lng=9;
+}
+
+message ListingMetrics {
+  string available_on=1;
+  int32 days_on_market=2;
+}
+
+message ID {
+  int32 id=1;
+}
+
+message UUID {
+  string value = 1;
+}
+
+message Empty {}

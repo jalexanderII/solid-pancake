@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package application;
+option go_package = "github.com/jalexanderII/solid-pancake/gen/application";
+
+import "common/types.proto";
+
+service Application {
+  rpc Apply(ApplicationReq) returns (ApplicationRes);
+  rpc ReadApplicationRequest(types.ID) returns (ApplicationReq);
+  rpc UpdateApplicationRequest(ApplicationReq) returns (ApplicationReq);
+  rpc DeleteApplicationRequest(types.ID) returns (ApplicationReq);
+  rpc ListApplicationRequests(types.Empty) returns (ListApplicationReqOut);
+  rpc ReadApplicationResponse(types.ID) returns (ApplicationRes);
+  rpc DeleteApplicationResponse(types.ID) returns (ApplicationRes);
+  rpc ListApplicationResponse(types.Empty) returns (ListApplicationResOut);
+}
+
+message ApplicationReq {
+  int32 id = 1;
+  string name = 2;
+  int32 user_ref = 3;
+  string social_security =4;
+  string date_of_birth = 5;
+  string drivers_license = 6;
+  types.Place previous_address = 7;
+  string landlord =8;
+  string landlord_number =9;
+  string employer =10;
+  int32 salary =11;
+  int32 apartment_ref =12;
+}
+
+message ApplicationRes {
+  int32 id = 1;
+  types.UUID reference_id=2;
+  string status=3;
+  repeated string attachments=4;
+  int32 application_ref=5;
+}
+
+message ListApplicationReqOut {
+  repeated ApplicationReq application_requests = 1 ;
+}
+
+message ListApplicationResOut {
+  repeated ApplicationRes application_responses = 1 ;
+}
