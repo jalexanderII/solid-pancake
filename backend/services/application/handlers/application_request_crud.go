@@ -2,9 +2,12 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jalexanderII/solid-pancake/database"
+	applicationpb "github.com/jalexanderII/solid-pancake/gen/application"
+	commonpb "github.com/jalexanderII/solid-pancake/gen/common"
 	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
 	RealEstateH "github.com/jalexanderII/solid-pancake/services/realestate/handlers"
 	RealEstateM "github.com/jalexanderII/solid-pancake/services/realestate/models"
@@ -18,7 +21,7 @@ type ApplicantFormRequest struct {
 	SocialSecurity  string                `json:"social_security,omitempty"`
 	DateOfBirth     string                `json:"date_of_birth,omitempty"`
 	DriversLicense  string                `json:"drivers_license,omitempty"`
-	PreviousAddress RealEstateM.Place     `json:"previous_address,omitempty" validate:"dive"`
+	PreviousAddress *commonpb.Place       `json:"previous_address,omitempty" validate:"dive"`
 	Landlord        string                `json:"landlord,omitempty"`
 	LandlordNumber  string                `json:"landlord_number,omitempty"`
 	Employer        string                `json:"employer,omitempty"`
@@ -28,17 +31,17 @@ type ApplicantFormRequest struct {
 }
 
 // CreateApplicantFormRequest Takes in a model and returns a serializer
-func CreateApplicantFormRequest(applicantRequestModel ApplicationM.ApplicantFormRequest) ApplicantFormRequest {
+func CreateApplicantFormRequest(applicantRequestModel *applicationpb.ApplicationReq) *applicationpb.ApplicationReq {
 	var (
 		apartment RealEstateM.Apartment
 		user      UserM.User
 	)
 	database.Database.Db.First(&apartment, applicantRequestModel.ApartmentRef)
 	database.Database.Db.First(&user, applicantRequestModel.UserRef)
-	return ApplicantFormRequest{
-		ID:              applicantRequestModel.ID,
+	return &applicationpb.ApplicationReq{
+		Id:              applicantRequestModel.Id,
 		Name:            applicantRequestModel.Name,
-		User:            UserH.CreateResponseUser(user),
+		UserRef:         int32(user.ID),
 		SocialSecurity:  applicantRequestModel.SocialSecurity,
 		DateOfBirth:     applicantRequestModel.DateOfBirth,
 		DriversLicense:  applicantRequestModel.DriversLicense,
@@ -47,15 +50,15 @@ func CreateApplicantFormRequest(applicantRequestModel ApplicationM.ApplicantForm
 		LandlordNumber:  applicantRequestModel.LandlordNumber,
 		Employer:        applicantRequestModel.Employer,
 		Salary:          applicantRequestModel.Salary,
-		Apartment:       RealEstateH.CreateResponseApartment(apartment),
+		ApartmentRef:    int32(apartment.ID),
 	}
 }
 
 func GetApplications(c *fiber.Ctx) error {
-	var applications []ApplicationM.ApplicantFormRequest
+	var applications []*applicationpb.ApplicationReq
 	database.Database.Db.Find(&applications)
 
-	responseApplRequests := make([]ApplicantFormRequest, len(applications))
+	responseApplRequests := make([]*applicationpb.ApplicationReq, len(applications))
 	for idx, application := range applications {
 		responseApplRequests[idx] = CreateApplicantFormRequest(application)
 	}
@@ -70,15 +73,27 @@ func findApplication(id int, application *ApplicationM.ApplicantFormRequest) err
 	return nil
 }
 
+func (h *Handler) GetApplication(id int32) (*applicationpb.ApplicationReq, error) {
+	var application *applicationpb.ApplicationReq
+	database.Database.Db.Find(&application, "user_id = ?", id)
+	if application.Id == 0 {
+		return nil, fmt.Errorf("no application found four user with that ID")
+	}
+
+	responseApplRequest := CreateApplicantFormRequest(application)
+
+	return responseApplRequest, nil
+}
+
 func GetApplication(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
 	}
 
-	var application ApplicationM.ApplicantFormRequest
+	var application *applicationpb.ApplicationReq
 	database.Database.Db.Find(&application, "user_id = ?", id)
-	if application.ID == 0 {
+	if application.Id == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application found four user with that ID"})
 	}
 

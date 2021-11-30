@@ -4,8 +4,8 @@ import (
 	"log"
 	"net"
 
+	"github.com/hashicorp/go-hclog"
 	applicationpb "github.com/jalexanderII/solid-pancake/gen/application"
-	"github.com/jalexanderII/solid-pancake/services/application/handlers"
 	"github.com/jalexanderII/solid-pancake/services/application/server"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -38,9 +38,8 @@ func setupApplicationServer() (*grpc.Server, net.Listener) {
 	// create a new gRPC server, use WithInsecure to allow http connections and (blank) options
 	grpcServer := grpc.NewServer(opts...)
 
-	h := handlers.NewHandler()
 	// Register the service with the server
-	applicationpb.RegisterApplicationServer(grpcServer, server.NewApplicationServer(h))
+	applicationpb.RegisterApplicationServer(grpcServer, server.NewApplicationServer(hclog.Default()))
 
 	// register the reflection service which allows clients to determine the methods
 	// for this gRPC service

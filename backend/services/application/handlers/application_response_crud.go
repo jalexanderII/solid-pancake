@@ -4,6 +4,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/jalexanderII/solid-pancake/database"
+	applicationpb "github.com/jalexanderII/solid-pancake/gen/application"
+	"github.com/jalexanderII/solid-pancake/gen/common"
 	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
 )
 
@@ -15,15 +17,15 @@ type ApplicantFormResponse struct {
 	Application ApplicantFormRequest `json:"application"`
 }
 
-func CreateApplicantFormResponse(applicantResponseModel ApplicationM.ApplicantFormResponse) ApplicantFormResponse {
-	var application ApplicationM.ApplicantFormRequest
+func CreateApplicantFormResponse(applicantResponseModel ApplicationM.ApplicantFormResponse) *applicationpb.ApplicationRes {
+	var application *applicationpb.ApplicationReq
 	database.Database.Db.First(&application, applicantResponseModel.ApplicationRef)
-	return ApplicantFormResponse{
-		ID:          applicantResponseModel.ID,
-		ReferenceId: applicantResponseModel.ReferenceId,
-		Status:      applicantResponseModel.Status,
-		Attachments: applicantResponseModel.Attachments,
-		Application: CreateApplicantFormRequest(application),
+	return &applicationpb.ApplicationRes {
+		Id: int32(applicantResponseModel.ID),
+		ReferenceId:    &common.UUID{Value: applicantResponseModel.ReferenceId.String()},
+		Status:         applicantResponseModel.Status,
+		Attachments:    applicantResponseModel.Attachments,
+		ApplicationRef: application.Id,
 	}
 }
 
