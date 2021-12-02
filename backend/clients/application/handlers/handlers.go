@@ -1,18 +1,18 @@
-package client
+package handlers
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	ApplicationC "github.com/jalexanderII/solid-pancake/clients/application"
+	c "github.com/jalexanderII/solid-pancake/clients/application/client"
+	ApplicationM "github.com/jalexanderII/solid-pancake/clients/application/models"
 	"github.com/jalexanderII/solid-pancake/database"
 	applicationpb "github.com/jalexanderII/solid-pancake/gen/application"
 	commonpb "github.com/jalexanderII/solid-pancake/gen/common"
-	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
 )
 
-var client = ApplicationC.NewApplClient()
+var client = c.NewApplClient()
 
 func Apply(c *fiber.Ctx) error {
 	var application *applicationpb.ApplicationReq

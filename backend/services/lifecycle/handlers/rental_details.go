@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	ApplicationM "github.com/jalexanderII/solid-pancake/clients/application/models"
 	"github.com/jalexanderII/solid-pancake/database"
-	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
 	LifeCycleM "github.com/jalexanderII/solid-pancake/services/lifecycle/models"
 	"github.com/jalexanderII/solid-pancake/utils"
 	"gorm.io/gorm"

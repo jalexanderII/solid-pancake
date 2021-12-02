@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	ApplicationRoutes "github.com/jalexanderII/solid-pancake/clients/application/routes"
 	"github.com/jalexanderII/solid-pancake/config"
 	"github.com/jalexanderII/solid-pancake/database"
 	"github.com/jalexanderII/solid-pancake/middleware"
-	ApplicationRoutes "github.com/jalexanderII/solid-pancake/services/application/routes"
 	LifeCycleRoutes "github.com/jalexanderII/solid-pancake/services/lifecycle/routes"
 	RestRoutes "github.com/jalexanderII/solid-pancake/services/realestate/routes"
 	UserRoutes "github.com/jalexanderII/solid-pancake/services/users/routes"

@@ -1,4 +1,4 @@
-package application
+package client
 
 import (
 	applicationpb "github.com/jalexanderII/solid-pancake/gen/application"
@@ -12,5 +12,3 @@ func NewApplClient() applicationpb.ApplicationClient {
 	}
 	return applicationpb.NewApplicationClient(conn)
 }
-
-

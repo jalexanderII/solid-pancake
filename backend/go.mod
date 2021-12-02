@@ -17,6 +17,7 @@ require (
 	google.golang.org/protobuf v1.27.1
 	gorm.io/driver/sqlite v1.2.3
 	gorm.io/gorm v1.22.2
+	github.com/jalexanderII/solid-pancake/backend/services/application v0.0.0-20211202201646-5f77f29f86d1
 )
 
 require (
@@ -39,3 +40,5 @@ require (
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 )
+
+replace github.com/jalexanderII/solid-pancake/backend/services/application => ./services/application

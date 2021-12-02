@@ -2,7 +2,7 @@ package database
 
 import (
 	"github.com/hashicorp/go-hclog"
-	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
+	ApplicationM "github.com/jalexanderII/solid-pancake/clients/application/models"
 	LifeCycleM "github.com/jalexanderII/solid-pancake/services/lifecycle/models"
 	RealEstateM "github.com/jalexanderII/solid-pancake/services/realestate/models"
 	UserM "github.com/jalexanderII/solid-pancake/services/users/models"
