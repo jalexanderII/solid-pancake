@@ -20,7 +20,6 @@ var client applicationpb.ApplicationClient
 
 func main() {
 	var conn *grpc.ClientConn
-
 	client, conn = c.SetupClient()
 	defer conn.Close()
 	log.Println("Successfully connected to application client...")
