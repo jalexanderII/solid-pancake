@@ -20,6 +20,7 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	grpcServer, lis := setupApplicationServer()
+
 	// start service's server
 	log.Println("starting application rpc service on", applicationAddr)
 	if err := grpcServer.Serve(lis); err != nil {
