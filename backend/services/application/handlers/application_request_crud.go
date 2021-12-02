@@ -63,17 +63,6 @@ func (h *Handler) GetApplications() (*applicationpb.ListApplicationReqOut, error
 	return &applicationpb.ListApplicationReqOut{ApplicationRequests: responseApplRequests}, nil
 }
 
-// func GetApplications(c *fiber.Ctx) error {
-// 	var applications []*applicationpb.ApplicationReq
-// 	database.Database.Db.Find(&applications)
-//
-// 	responseApplRequests := make([]*applicationpb.ApplicationReq, len(applications))
-// 	for idx, application := range applications {
-// 		responseApplRequests[idx] = CreateApplicantFormRequest(application)
-// 	}
-// 	return c.Status(fiber.StatusOK).JSON(responseApplRequests)
-// }
-
 func findApplication(id int, application *applicationpb.ApplicationRes) error {
 	database.Database.Db.Find(&application, "id = ?", id)
 	if application.Id == 0 {
@@ -93,23 +82,6 @@ func (h *Handler) GetApplication(id int32) (*applicationpb.ApplicationReq, error
 
 	return responseApplRequest, nil
 }
-//
-// func GetApplication(c *fiber.Ctx) error {
-// 	id, err := c.ParamsInt("id")
-// 	if err != nil {
-// 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
-// 	}
-//
-// 	var application *applicationpb.ApplicationReq
-// 	database.Database.Db.Find(&application, "user_id = ?", id)
-// 	if application.Id == 0 {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application found four user with that ID"})
-// 	}
-//
-// 	responseApplRequest := CreateApplicantFormRequest(application)
-//
-// 	return c.Status(fiber.StatusOK).JSON(responseApplRequest)
-// }
 
 func (h *Handler) DeleteApplication(id int32) (*applicationpb.ApplicationReq, error) {
 	var application *applicationpb.ApplicationReq
@@ -121,19 +93,3 @@ func (h *Handler) DeleteApplication(id int32) (*applicationpb.ApplicationReq, er
 	database.Database.Db.Delete(&application)
 	return application, nil
 }
-//
-// func DeleteApplication(c *fiber.Ctx) error {
-// 	id, err := c.ParamsInt("id")
-// 	if err != nil {
-// 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
-// 	}
-//
-// 	var application ApplicationM.ApplicantFormRequest
-//
-// 	database.Database.Db.First(&application, id)
-// 	if application.Name == "" {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application found with ID"})
-// 	}
-// 	database.Database.Db.Delete(&application)
-// 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Application successfully deleted"})
-// }
