@@ -6,12 +6,10 @@ import "common/types.proto";
 service Application {
   rpc Apply(ApplicationReq) returns (ApplicationRes);
   rpc ReadApplicationRequest(types.ID) returns (ApplicationReq);
-  rpc UpdateApplicationRequest(ApplicationReq) returns (ApplicationReq);
   rpc DeleteApplicationRequest(types.ID) returns (ApplicationReq);
   rpc ListApplicationRequests(types.Empty) returns (ListApplicationReqOut);
   rpc ReadApplicationResponse(types.ID) returns (ApplicationRes);
   rpc DeleteApplicationResponse(types.ID) returns (ApplicationRes);
-  rpc ListApplicationResponse(types.Empty) returns (ListApplicationResOut);
 }
 
 message ApplicationReq {
@@ -39,8 +37,4 @@ message ApplicationRes {
 
 message ListApplicationReqOut {
   repeated ApplicationReq application_requests = 1 ;
-}
-
-message ListApplicationResOut {
-  repeated ApplicationRes application_responses = 1 ;
 }

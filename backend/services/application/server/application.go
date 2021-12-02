@@ -30,33 +30,22 @@ func (a *ApplicationServiceServer) ReadApplicationRequest(_ context.Context, req
 	return a.h.GetApplication(req.GetId())
 }
 
-func (a *ApplicationServiceServer) UpdateApplicationRequest(ctx context.Context, req *applicationpb.ApplicationReq) (*applicationpb.ApplicationReq, error){
-	a.log.Info("Handle UpdateApplicationRequest", "user_id", req.GetUserRef())
-	return nil, nil
-}
-
-func (a *ApplicationServiceServer) DeleteApplicationRequest(ctx context.Context, req *common.ID) (*applicationpb.ApplicationReq, error){
+func (a *ApplicationServiceServer) DeleteApplicationRequest(_ context.Context, req *common.ID) (*applicationpb.ApplicationReq, error){
 	a.log.Info("Handle DeleteApplicationRequest", "user_id", req.String())
-	return nil, nil
+	return a.h.DeleteApplication(req.GetId())
 }
 
-func (a *ApplicationServiceServer) ListApplicationRequests(ctx context.Context, _ *common.Empty) (*applicationpb.ListApplicationReqOut, error){
+func (a *ApplicationServiceServer) ListApplicationRequests(context.Context, *common.Empty) (*applicationpb.ListApplicationReqOut, error){
 	a.log.Info("Handle ListApplicationRequests")
-	return nil, nil
+	return a.h.GetApplications()
 }
 
-func (a *ApplicationServiceServer) ReadApplicationResponse(ctx context.Context, req *common.ID) (*applicationpb.ApplicationRes, error){
+func (a *ApplicationServiceServer) ReadApplicationResponse(_ context.Context, req *common.ID) (*applicationpb.ApplicationRes, error){
 	a.log.Info("Handle ReadApplicationResponse", "user_id", req.String())
-	return nil, nil
+	return a.h.GetApplicationResponse(req.GetId())
 }
 
-func (a *ApplicationServiceServer) DeleteApplicationResponse(ctx context.Context, req *common.ID) (*applicationpb.ApplicationRes, error){
+func (a *ApplicationServiceServer) DeleteApplicationResponse(_ context.Context, req *common.ID) (*applicationpb.ApplicationRes, error){
 	a.log.Info("Handle DeleteApplicationResponse", "user_id", req.String())
-	return nil, nil
+	return a.h.DeleteApplicationResponse(req.GetId())
 }
-
-func (a *ApplicationServiceServer) ListApplicationResponse(ctx context.Context, _ *common.Empty) (*applicationpb.ListApplicationResOut, error){
-	a.log.Info("Handle ListApplicationResponses")
-	return nil, nil
-}
-

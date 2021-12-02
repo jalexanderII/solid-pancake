@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/jalexanderII/solid-pancake/database"
 	applicationpb "github.com/jalexanderII/solid-pancake/gen/application"
 	"github.com/jalexanderII/solid-pancake/gen/common"
-	ApplicationM "github.com/jalexanderII/solid-pancake/services/application/models"
 )
 
 type ApplicantFormResponse struct {
@@ -17,11 +17,11 @@ type ApplicantFormResponse struct {
 	Application ApplicantFormRequest `json:"application"`
 }
 
-func CreateApplicantFormResponse(applicantResponseModel ApplicationM.ApplicantFormResponse) *applicationpb.ApplicationRes {
+func CreateApplicantFormResponse(applicantResponseModel *applicationpb.ApplicationRes) *applicationpb.ApplicationRes {
 	var application *applicationpb.ApplicationReq
 	database.Database.Db.First(&application, applicantResponseModel.ApplicationRef)
 	return &applicationpb.ApplicationRes {
-		Id: int32(applicantResponseModel.ID),
+		Id:             applicantResponseModel.Id,
 		ReferenceId:    &common.UUID{Value: applicantResponseModel.ReferenceId.String()},
 		Status:         applicantResponseModel.Status,
 		Attachments:    applicantResponseModel.Attachments,
@@ -29,35 +29,57 @@ func CreateApplicantFormResponse(applicantResponseModel ApplicationM.ApplicantFo
 	}
 }
 
-func GetApplicationResponse(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
-	}
-
-	var appResponse ApplicationM.ApplicantFormResponse
+func (h *Handler) GetApplicationResponse(id int32) (*applicationpb.ApplicationRes, error) {
+	var appResponse *applicationpb.ApplicationRes
 	database.Database.Db.First(&appResponse, id)
-	if appResponse.ReferenceId == uuid.Nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application response found with ID"})
+	if appResponse.ReferenceId.String() == "" {
+		return nil, fmt.Errorf("no application response found with ID")
 	}
-
 	responseApplResponse := CreateApplicantFormResponse(appResponse)
 
-	return c.Status(fiber.StatusOK).JSON(responseApplResponse)
+	return responseApplResponse, nil
 }
 
-func DeleteApplicationResponse(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
-	}
+// func GetApplicationResponse(c *fiber.Ctx) error {
+// 	id, err := c.ParamsInt("id")
+// 	if err != nil {
+// 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
+// 	}
+//
+// 	var appResponse ApplicationM.ApplicantFormResponse
+// 	database.Database.Db.First(&appResponse, id)
+// 	if appResponse.ReferenceId == uuid.Nil {
+// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application response found with ID"})
+// 	}
+//
+// 	responseApplResponse := CreateApplicantFormResponse(appResponse)
+//
+// 	return c.Status(fiber.StatusOK).JSON(responseApplResponse)
+// }
 
-	var appResponse ApplicationM.ApplicantFormResponse
+func (h *Handler) DeleteApplicationResponse(id int32) (*applicationpb.ApplicationRes, error) {
+	var appResponse *applicationpb.ApplicationRes
 
 	database.Database.Db.First(&appResponse, id)
-	if appResponse.ReferenceId == uuid.Nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application response found with ID"})
+	if appResponse.ReferenceId.String() == "" {
+		return nil, fmt.Errorf("no application response found with ID")
 	}
 	database.Database.Db.Delete(&appResponse)
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Application Response successfully deleted"})
+	return appResponse, nil
 }
+//
+// func DeleteApplicationResponse(c *fiber.Ctx) error {
+// 	id, err := c.ParamsInt("id")
+// 	if err != nil {
+// 		return c.Status(fiber.StatusBadRequest).JSON("Please ensure id is and uint")
+// 	}
+//
+// 	var appResponse ApplicationM.ApplicantFormResponse
+//
+// 	database.Database.Db.First(&appResponse, id)
+// 	if appResponse.ReferenceId == uuid.Nil {
+// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "No application response found with ID"})
+// 	}
+// 	database.Database.Db.Delete(&appResponse)
+// 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Application Response successfully deleted"})
+// }
