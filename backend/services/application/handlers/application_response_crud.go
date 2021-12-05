@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	ApplicationM "github.com/jalexanderII/solid-pancake/clients/application/models"
 	"github.com/jalexanderII/solid-pancake/database"
 	applicationpb "github.com/jalexanderII/solid-pancake/gen/application"
 	"github.com/jalexanderII/solid-pancake/gen/common"
@@ -17,20 +18,20 @@ type ApplicantFormResponse struct {
 	Application ApplicantFormRequest `json:"application"`
 }
 
-func CreateApplicantFormResponse(applicantResponseModel *applicationpb.ApplicationRes) *applicationpb.ApplicationRes {
-	var application *applicationpb.ApplicationReq
+func CreateApplicantFormResponse(applicantResponseModel ApplicationM.ApplicantFormResponse) *applicationpb.ApplicationRes {
+	var application ApplicationM.ApplicantFormRequest
 	database.Database.Db.First(&application, applicantResponseModel.ApplicationRef)
-	return &applicationpb.ApplicationRes {
-		Id:             applicantResponseModel.Id,
+	return &applicationpb.ApplicationRes{
+		Id:             int32(applicantResponseModel.ID),
 		ReferenceId:    &common.UUID{Value: applicantResponseModel.ReferenceId.String()},
 		Status:         applicantResponseModel.Status,
 		Attachments:    applicantResponseModel.Attachments,
-		ApplicationRef: application.Id,
+		ApplicationRef: int32(application.ID),
 	}
 }
 
 func (h *Handler) GetApplicationResponse(id int32) (*applicationpb.ApplicationRes, error) {
-	var appResponse *applicationpb.ApplicationRes
+	var appResponse ApplicationM.ApplicantFormResponse
 	database.Database.Db.First(&appResponse, id)
 	if appResponse.ReferenceId.String() == "" {
 		return nil, fmt.Errorf("no application response found with ID")
@@ -41,12 +42,12 @@ func (h *Handler) GetApplicationResponse(id int32) (*applicationpb.ApplicationRe
 }
 
 func (h *Handler) DeleteApplicationResponse(id int32) (*applicationpb.ApplicationRes, error) {
-	var appResponse *applicationpb.ApplicationRes
+	var appResponse ApplicationM.ApplicantFormResponse
 
 	database.Database.Db.First(&appResponse, id)
 	if appResponse.ReferenceId.String() == "" {
 		return nil, fmt.Errorf("no application response found with ID")
 	}
 	database.Database.Db.Delete(&appResponse)
-	return appResponse, nil
+	return CreateApplicantFormResponse(appResponse), nil
 }

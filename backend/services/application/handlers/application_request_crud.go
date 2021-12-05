@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	ApplicationM "github.com/jalexanderII/solid-pancake/clients/application/models"
 	"github.com/jalexanderII/solid-pancake/database"
 	applicationpb "github.com/jalexanderII/solid-pancake/gen/application"
 	commonpb "github.com/jalexanderII/solid-pancake/gen/common"
@@ -29,7 +30,7 @@ type ApplicantFormRequest struct {
 }
 
 // CreateApplicantFormRequest Takes in a model and returns a serializer
-func CreateApplicantFormRequest(applicantRequestModel *applicationpb.ApplicationReq) *applicationpb.ApplicationReq {
+func CreateApplicantFormRequest(applicantRequestModel ApplicationM.ApplicantFormRequest) *applicationpb.ApplicationReq {
 	var (
 		apartment RealEstateM.Apartment
 		user      UserM.User
@@ -37,23 +38,33 @@ func CreateApplicantFormRequest(applicantRequestModel *applicationpb.Application
 	database.Database.Db.First(&apartment, applicantRequestModel.ApartmentRef)
 	database.Database.Db.First(&user, applicantRequestModel.UserRef)
 	return &applicationpb.ApplicationReq{
-		Id:              applicantRequestModel.Id,
-		Name:            applicantRequestModel.Name,
-		UserRef:         int32(user.ID),
-		SocialSecurity:  applicantRequestModel.SocialSecurity,
-		DateOfBirth:     applicantRequestModel.DateOfBirth,
-		DriversLicense:  applicantRequestModel.DriversLicense,
-		PreviousAddress: applicantRequestModel.PreviousAddress,
-		Landlord:        applicantRequestModel.Landlord,
-		LandlordNumber:  applicantRequestModel.LandlordNumber,
-		Employer:        applicantRequestModel.Employer,
-		Salary:          applicantRequestModel.Salary,
-		ApartmentRef:    int32(apartment.ID),
+		Id:             int32(applicantRequestModel.ID),
+		Name:           applicantRequestModel.Name,
+		UserRef:        int32(user.ID),
+		SocialSecurity: applicantRequestModel.SocialSecurity,
+		DateOfBirth:    applicantRequestModel.DateOfBirth,
+		DriversLicense: applicantRequestModel.DriversLicense,
+		PreviousAddress: &commonpb.Place{
+			Address:      applicantRequestModel.PreviousAddress.Address,
+			Street:       applicantRequestModel.PreviousAddress.Street,
+			City:         applicantRequestModel.PreviousAddress.City,
+			State:        applicantRequestModel.PreviousAddress.State,
+			Zip:          applicantRequestModel.PreviousAddress.Zip,
+			Neighborhood: applicantRequestModel.PreviousAddress.Neighborhood,
+			Unit:         applicantRequestModel.PreviousAddress.Unit,
+			Lat:          applicantRequestModel.PreviousAddress.Lat,
+			Lng:          applicantRequestModel.PreviousAddress.Lng,
+		},
+		Landlord:       applicantRequestModel.Landlord,
+		LandlordNumber: applicantRequestModel.LandlordNumber,
+		Employer:       applicantRequestModel.Employer,
+		Salary:         applicantRequestModel.Salary,
+		ApartmentRef:   int32(apartment.ID),
 	}
 }
 
 func (h *Handler) GetApplications() (*applicationpb.ListApplicationReqOut, error) {
-	var applications []*applicationpb.ApplicationReq
+	var applications []ApplicationM.ApplicantFormRequest
 	database.Database.Db.Find(&applications)
 
 	responseApplRequests := make([]*applicationpb.ApplicationReq, len(applications))
@@ -63,18 +74,18 @@ func (h *Handler) GetApplications() (*applicationpb.ListApplicationReqOut, error
 	return &applicationpb.ListApplicationReqOut{ApplicationRequests: responseApplRequests}, nil
 }
 
-func findApplication(id int, application *applicationpb.ApplicationRes) error {
+func FindApplication(id int, application ApplicationM.ApplicantFormRequest) error {
 	database.Database.Db.Find(&application, "id = ?", id)
-	if application.Id == 0 {
+	if application.ID == 0 {
 		return errors.New("application does not exist")
 	}
 	return nil
 }
 
 func (h *Handler) GetApplication(id int32) (*applicationpb.ApplicationReq, error) {
-	var application *applicationpb.ApplicationReq
+	var application ApplicationM.ApplicantFormRequest
 	database.Database.Db.Find(&application, "user_id = ?", id)
-	if application.Id == 0 {
+	if application.ID == 0 {
 		return nil, fmt.Errorf("no application found four user with that ID")
 	}
 
@@ -84,12 +95,12 @@ func (h *Handler) GetApplication(id int32) (*applicationpb.ApplicationReq, error
 }
 
 func (h *Handler) DeleteApplication(id int32) (*applicationpb.ApplicationReq, error) {
-	var application *applicationpb.ApplicationReq
+	var application ApplicationM.ApplicantFormRequest
 
 	database.Database.Db.First(&application, id)
 	if application.Name == "" {
 		return nil, fmt.Errorf("no application found with ID")
 	}
 	database.Database.Db.Delete(&application)
-	return application, nil
+	return CreateApplicantFormRequest(application), nil
 }

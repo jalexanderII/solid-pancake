@@ -1,20 +1,23 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
+	ApplicationM "github.com/jalexanderII/solid-pancake/clients/application/models"
 	"github.com/jalexanderII/solid-pancake/database"
 	applicationpb "github.com/jalexanderII/solid-pancake/gen/application"
-	commonpb "github.com/jalexanderII/solid-pancake/gen/common"
+	LifeCycleH "github.com/jalexanderII/solid-pancake/services/lifecycle/handlers"
 )
 
-type Handler struct {}
+type Handler struct{}
 
 func NewHandler() *Handler {
 	h := &Handler{}
 	return h
 }
 
-func (h *Handler) Apply(application *applicationpb.ApplicationReq) (*applicationpb.ApplicationRes, error) {
+func (h *Handler) Apply(application ApplicationM.ApplicantFormRequest) (*applicationpb.ApplicationRes, error) {
 	responseApplRequest, err := CreateFormRequest(application)
 	if err != nil {
 		return nil, err
@@ -28,28 +31,28 @@ func (h *Handler) Apply(application *applicationpb.ApplicationReq) (*application
 	return responseApplResponse, nil
 }
 
-
-func CreateFormRequest(application *applicationpb.ApplicationReq) (*applicationpb.ApplicationReq, error) {
+func CreateFormRequest(application ApplicationM.ApplicantFormRequest) (*applicationpb.ApplicationReq, error) {
 	responseApplRequest := CreateApplicantFormRequest(application)
 
 	if err := database.Database.Db.Create(&application).Error; err != nil {
-		return &applicationpb.ApplicationReq{}, err
+		return nil, err
 	}
-	responseApplRequest.Id = application.Id
+	responseApplRequest.Id = int32(application.ID)
 	return responseApplRequest, nil
 }
 
 func CreateFormResponse(id int, status string) (*applicationpb.ApplicationRes, error) {
-	var appModel *applicationpb.ApplicationRes
-	if err := findApplication(id, appModel); err != nil {
+	var appModel ApplicationM.ApplicantFormRequest
+	if err := FindApplication(id, appModel); err != nil {
 		return nil, err
 	}
 
-	appResponse := &applicationpb.ApplicationRes{
-		ReferenceId:    &commonpb.UUID{Value: uuid.NewString()},
+	appResponse := ApplicationM.ApplicantFormResponse{
+		ReferenceId:    uuid.New(),
 		Status:         status,
-		Attachments: appModel.Attachments,
-		ApplicationRef: appModel.Id,
+		Attachments:    []string{},
+		ApplicationRef: int(appModel.ID),
+		Application:    appModel,
 	}
 	responseApplResponse := CreateApplicantFormResponse(appResponse)
 
@@ -57,15 +60,15 @@ func CreateFormResponse(id int, status string) (*applicationpb.ApplicationRes, e
 		return nil, err
 	}
 
-	responseApplResponse.Id = appResponse.Id
+	responseApplResponse.Id = int32(appResponse.ID)
 
-	// applicationRentalDetails := &LifeCycleH.RentalDetailsData{
-	// 	Data: &LifeCycleH.ApplicationData{ApplicationData: appResponse},
-	// }
-	// err := LifeCycleH.SendToDataPipeline(applicationRentalDetails)
-	// if err != nil {
-	// 	return nil, fmt.Error("error processing rental details %v", err)
-	// }
+	applicationRentalDetails := &LifeCycleH.RentalDetailsData{
+		Data: &LifeCycleH.ApplicationData{ApplicationData: &appResponse},
+	}
+	err := LifeCycleH.SendToDataPipeline(applicationRentalDetails)
+	if err != nil {
+		return nil, fmt.Errorf("error processing rental details %v", err)
+	}
 
 	return responseApplResponse, nil
 }
