@@ -64,7 +64,7 @@ func (a *ApplicationServiceServer) Apply(_ context.Context, req *applicationpb.A
 }
 
 func (a *ApplicationServiceServer) ReadApplicationRequest(_ context.Context, req *common.ID) (*applicationpb.ApplicationReq, error) {
-	a.log.Info("Handle GetApplicationById", "user_id", req.String())
+	a.log.Info("Handle GetApplicationById", "user_id", req.GetId())
 	return a.h.GetApplication(req.GetId())
 }
 
